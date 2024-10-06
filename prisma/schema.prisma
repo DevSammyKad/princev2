@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Banner {
+ id          String   @id @default(uuid())
+  title       String
+  imageString String
+  createdAt   DateTime @default(now())
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name             String
+  shortDescription String
+  description      String
+  status           ProductStatus
+  images           String[]
+  categoryId       String?
+  category         Category? @relation(fields: [categoryId],references: [id])
+  price            Float
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @default(now())
+  isFeatured       Boolean       @default(false)
+  salePrice        Float
+}
+model Category {
+  id           String     @id @default(uuid())           // Unique ID for each category/subcategory
+  name         String   
+  slug         String     @unique
+  imageString  String? 
+  parentId     String?    // If null, this is a top-level category; otherwise, it's a subcategory
+  parent       Category?  @relation("SubCategory", fields: [parentId], references: [id])
+  subcategories Category[] @relation("SubCategory")  
+  products     Product[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @default(now())
+}
+
+enum ProductStatus {
+  draft
+  published
+}
+
+model User {
+  id           String   @id
+  email        String   @unique
+  firstName    String
+  lastName     String
+  profileImage String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+}
+
+model WishList {
+  id        String   @id
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
