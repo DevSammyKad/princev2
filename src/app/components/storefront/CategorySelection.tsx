@@ -24,7 +24,7 @@ export function CategoriesSelection() {
       <div className="mt-6 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6 lg:gap-8 ">
         <div className="grid max-sm:grid-cols-2 gap-5">
           <Link
-            href="/products/all"
+            href="/products/viral-gadgets"
             className="hover:border-blue-300 border-2 rounded-lg p-0.5"
           >
             <Image
@@ -36,14 +36,19 @@ export function CategoriesSelection() {
               className="object-cover object-center rounded-lg max-sm:h-[100px]"
             />
           </Link>
-          <Image
-            src={newCollection}
-            alt="New Collection Image"
-            width="0"
-            height="0"
-            sizes="100vw"
-            className="object-cover object-center rounded-lg  max-sm:h-[100px]"
-          />
+          <Link
+            href="/products/new-collection"
+            className="hover:border-blue-300 border-2 rounded-lg p-0.5"
+          >
+            <Image
+              src={newCollection}
+              alt="New Collection Image"
+              width="0"
+              height="0"
+              sizes="100vw"
+              className="object-cover object-center rounded-lg  max-sm:h-[100px]"
+            />
+          </Link>
         </div>
         <div className="group aspect-w-2 aspect-h-1 border">
           <Image

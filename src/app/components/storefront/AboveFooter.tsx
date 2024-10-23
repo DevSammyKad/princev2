@@ -2,7 +2,7 @@ import { aboveFooterData, AboveFooterType } from '@/constants/index';
 export default function AboveFooter() {
   return (
     <>
-      <div className="grid grid-cols-4 max-md:grid-cols-2 p-5 gap-6 bg-white rounded-lg shadow-sm lg:max-w-7xl mx-auto my-5">
+      <div className="grid grid-cols-4 max-md:grid-cols-2 p-5 gap-6 bg-white rounded-lg shadow-sm lg:max-w-7xl mx-auto my-16 max-sm:my-10">
         {aboveFooterData.map((item: AboveFooterType, index) => (
           <div className="flex items-center gap-4" key={index}>
             <div> {item.icons && <item.icons />}</div>

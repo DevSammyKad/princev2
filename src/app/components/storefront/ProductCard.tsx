@@ -23,46 +23,52 @@ interface iAppProps {
 
 export function ProductCard({ item }: iAppProps) {
   return (
-    <div className="rounded-lg bg-slate-50 shadow-md flex flex-col justify-between h-full">
-      <Carousel className="w-full mx-auto">
+    <div className="group relative rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl overflow-hidden">
+      <Carousel className="w-full mx-auto aspect-square ">
         <CarouselContent>
-          {item.images.map((item, index) => (
+          {item.images.map((image, index) => (
             <CarouselItem key={index}>
-              <div className="relative h-[330px] w-full rounded-lg overflow-hidden ">
+              <div className="relative aspect-square w-full overflow-hidden ">
                 <Image
-                  src={item}
-                  width="0"
-                  height="0"
-                  sizes="100vw"
-                  alt="Product Image"
-                  className="w-full h-[330px] object-contain object-center bg-white p-1"
+                  src={image}
+                  alt={`${item.name} - Image ${index + 1}`}
+                  // layout="fill"
+                  // objectFit="cover"
+                  width={0}
+                  height={0}
+                  sizes="100vh"
+                  className="transition-transform duration-300 w-[500px] object-contain  object-center group-hover:scale-105"
                 />
               </div>
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious className="ml-14" />
-        <CarouselNext className="mr-14" />
+        <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2" />
+        <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2" />
       </Carousel>
-      <div className="flex justify-between items-center mt-2 w-full ">
-        <h1 className="font-semibold text-xl ">{item.name}</h1>
-        <div className="flex justify-center items-center space-x-2 w-auto">
-          <h3 className="inline-flex items-center rounded-md bg-blue/10 px-2 py-1 text-sm font-medium text-blue-500 ring-1 ring-inset ring-blue-500/10">
-            ₹ {item.salePrice}
-          </h3>
-
-          <del className="inline-flex text-gray-400 items-center rounded-md bg-blue/10 px-2 py-1 text-sm font-medium  ring-1 ring-inset ring-blue-500/10">
-            {item.price}
-          </del>
-        </div>
-      </div>
-      <div>
-        <p className="text-gray-500 text-sm line-clamp-2">
+      <div className="p-4">
+        <h2 className="text-xl font-semibold text-gray-800 mb-2 line-clamp-1">
+          {item.name}
+        </h2>
+        <p className="text-sm text-gray-600 mb-4 line-clamp-2 ">
           {item.shortDescription}
         </p>
-        <Button className="w-full mt-5">
-          <Link href={`/product/${item.id}`}>View Product</Link>
-        </Button>
+        <div className="flex justify-between items-center mb-4">
+          <div className="space-y-1">
+            <span className="text-2xl font-bold text-primary">
+              ₹{item.salePrice}
+            </span>
+            <del className="block text-sm text-gray-400">₹{item.price}</del>
+          </div>
+          <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">
+            {Math.round((1 - item.salePrice / item.price) * 100)}% OFF
+          </span>
+        </div>
+        <Link href={`/product/${item.id}`} passHref>
+          <Button className="w-full transition-colors duration-300 hover:bg-primary-dark">
+            View Product
+          </Button>
+        </Link>
       </div>
     </div>
   );
@@ -70,13 +76,18 @@ export function ProductCard({ item }: iAppProps) {
 
 export function LoadingProductCard() {
   return (
-    <div className="flex flex-col">
-      <Skeleton className="w-full h-[300px]" />
-      <div className="flex flex-col mt-2 gap-y-2">
+    <div className="rounded-xl bg-white shadow-lg overflow-hidden">
+      <Skeleton className="w-full aspect-square" />
+      <div className="p-4 space-y-4">
+        <Skeleton className="h-6 w-3/4" />
         <Skeleton className="h-4 w-full" />
-        <Skeleton className="h-6 w-full" />
+        <Skeleton className="h-4 w-full" />
+        <div className="flex justify-between items-center">
+          <Skeleton className="h-8 w-1/3" />
+          <Skeleton className="h-6 w-1/4 rounded-full" />
+        </div>
+        <Skeleton className="h-10 w-full" />
       </div>
-      <Skeleton className="w-full h-10 mt-5" />
     </div>
   );
 }

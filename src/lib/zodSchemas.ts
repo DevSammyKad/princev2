@@ -10,6 +10,7 @@ export const productSchema = z.object({
   price: z.number().min(1, 'Price Must me greater than 0 '),
   salePrice: z.number().min(1, 'Price Must me greater than 0 '),
   isFeatured: z.boolean().optional(),
+  tags: z.array(z.string()).optional(),
 });
 
 // Category schema with slug generation and uniqueness check
@@ -29,4 +30,17 @@ export const categorySchema = z.object({
 export const bannerSchema = z.object({
   title: z.string(),
   imageString: z.string(),
+});
+
+export const userSchema = z.object({
+  firstName: z.string().min(1, 'First Name Should Not be Empty'),
+  lastName: z.string().min(1, 'Last Name Should Not be Empty'),
+  email: z.string().email('Invalid Email').min(1, 'Email Should Not be Empty'),
+  phoneNumber: z.string().min(1, 'Phone Number Should Not be Empty'),
+  address: z.string().min(1, 'Address Should Not be Empty'),
+  city: z.string().min(1, 'City Should Not be Empty'),
+  state: z.string().min(1, 'State Should Not be Empty'),
+  country: z.string().min(1, 'Country Should Not be Empty'),
+  pincode: z.number().min(1, 'Pincode Should Not be Empty'),
+  profileImage: z.string().optional(),
 });

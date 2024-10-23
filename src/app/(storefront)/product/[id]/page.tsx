@@ -1,14 +1,13 @@
 'use server';
 import { addItem } from '@/app/actions';
-import { ShoppingBagButton } from '@/app/components/dashboard/SubmitButton';
 import FeaturedProducts from '@/app/components/storefront/FeaturedProducts';
 import ImageSlider from '@/app/components/storefront/ImageSlider';
-import ProductCounter from '@/app/components/storefront/ProductCounter';
+import ProductAddToCart from '@/app/components/storefront/ProductAddToCart';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import prisma from '@/lib/db';
-import { Minus, Plus, StarIcon } from 'lucide-react';
+import { StarIcon } from 'lucide-react';
 import { notFound } from 'next/navigation';
 
 async function getData(productId: string) {
@@ -21,6 +20,7 @@ async function getData(productId: string) {
       salePrice: true,
       images: true,
       shortDescription: true,
+      category: true,
       description: true,
       name: true,
       id: true,
@@ -54,87 +54,69 @@ export default async function ProductIdRoute({
         </div>
         <div className="space-y-3">
           <h1 className="text-3xl font-bold">{data.name}</h1>
-
           <div className="flex space-x-2">
-            <StarIcon className="text-yellow-500 h-4 w-4 fill-yellow-400" />
-            <StarIcon className="text-yellow-500 h-4 w-4 fill-yellow-400" />
-            <StarIcon className="text-yellow-500 h-4 w-4 fill-yellow-400" />
-            <StarIcon className="text-yellow-500 h-4 w-4 fill-yellow-400" />
-            <StarIcon className="text-yellow-500 h-4 w-4 fill-yellow-400" />
+            {[...Array(5)].map((_, index) => (
+              <StarIcon
+                key={index}
+                className="text-yellow-500 h-4 w-4 fill-yellow-400"
+              />
+            ))}
           </div>
           <div className="flex items-center gap-2">
             <del className="text-gray-500">
-              <h2 className="tracking-wide text-2xl font-semibold text-gray-500">
-                {`${data.price} ₹`}
-              </h2>
+              <span className="text-2xl text-center font-semibold">{`${data.price} ₹`}</span>
             </del>
-            <h1 className="tracking-wide text-2xl font-semibold">
-              {`${data.salePrice} ₹`}
-            </h1>
+            <span className="text-2xl font-semibold text-primary">{`${data.salePrice} ₹`}</span>
           </div>
           <p className="text-gray-600">{data.shortDescription}</p>
 
-          <div className="border-t border-gray-200 pt-6">
-            <Label htmlFor="colors" className="">
-              Select Colors
-            </Label>
-            <Input
-              checked
-              className="bg-red-500 rounded-full w-10 h-10 mt-4"
-              disabled
-              id="colors"
-            />
+          <div className="border-t  border-gray-200 pt-6">
+            <Label htmlFor="colors">Select Color</Label>
+
+            <div className="flex gap-x-4 mt-2">
+              <Button className="bg-gray-400 rounded-full h-8 w-8"></Button>
+            </div>
           </div>
-          <div className="border-t border-gray-200 pt-6 flex flex-col">
-            <Label htmlFor="sizes" className="">
-              Select Size
-            </Label>
+          <div className="border-t border-gray-200 pt-6 ">
+            <Label htmlFor="sizes">Select Size</Label>
             <div className="flex items-center space-x-5">
-              <Button className="bg-gray-300 rounded-lg mt-4" id="sizes">
-                Xl
-              </Button>
-              <Button className="bg-gray-300 rounded-lg mt-4" id="sizes">
-                xs
-              </Button>
-              <Button
-                disabled
-                className="bg-gray-300 rounded-lg mt-4 cursor-not-allowed"
-                id="sizes"
-              >
-                M
-              </Button>
+              {['XS', 'S', 'M', 'L ', 'XL'].map((size, index) => (
+                <Button
+                  key={index}
+                  variant="outline"
+                  className="bg-gray-300 rounded-lg mt-4 cursor-not-allowed"
+                  id="sizes"
+                >
+                  {size}
+                </Button>
+              ))}
             </div>
           </div>
-          <div className="flex items-center space-x-7 w-full border-t border-gray-200 pt-6 ">
-            <div className="flex items-center gap-2">
-              <Button variant="secondary">
-                <Minus className="w-5 h-5" size="icon" />
-              </Button>
-              <span>""</span>
-              <Button variant="secondary">
-                <Plus className="w-5 h-5" size="icon" />
-              </Button>
-            </div>
-            <form action={addProductToCart} method="post">
-              <ShoppingBagButton />
-            </form>
+          <div className="flex items-center space-x-4 border-t border-gray-200 pt-6">
+            <ProductAddToCart
+              productId={data.id}
+              addProductToCart={addProductToCart}
+            />
           </div>
         </div>
       </div>
-      <div className="border-t border-gray-200 pt-6">
-        <h2 className="text-xl font-semibold mb-4">Product Description</h2>
-        <p className="text-gray-700">{data.description}</p>
+      <div className="mt-12 border-t border-gray-200 pt-6">
+        <h2 className="text-2xl font-semibold mb-4">Product Description</h2>
+        <p className="text-gray-700 whitespace-pre-wrap">{data.description}</p>
       </div>
-
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold">Features</h2>
-        <ul className="list-disc list-inside text-gray-700">
-          <li>High-quality material</li>
-          <li>Durable and long-lasting</li>
-          <li>Easy to clean and maintain </li>
+      <div className="mt-12 space-y-4">
+        <h2 className="text-2xl font-semibold">Features</h2>
+        <ul className="list-disc list-inside text-gray-700 space-y-2">
+          <li>High-quality organic cotton material</li>
+          <li>Durable and long-lasting construction</li>
+          <li>Easy to clean and maintain</li>
+          <li>Modern fit for a stylish look</li>
         </ul>
       </div>
-      <FeaturedProducts />
+      <div className="mt-12">
+        <h2 className="text-2xl font-semibold mb-6">You May Also Like</h2>
+        <FeaturedProducts />
+      </div>
     </div>
   );
 }

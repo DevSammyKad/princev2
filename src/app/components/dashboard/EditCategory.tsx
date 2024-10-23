@@ -154,7 +154,7 @@ const EditCategory = ({ data }: iAppProps) => {
               <input
                 type="hidden"
                 name="parentCategory"
-                value={selectedParent}
+                value={selectedParent || 'none'}
               />
             </div>
 
@@ -167,16 +167,14 @@ const EditCategory = ({ data }: iAppProps) => {
                 defaultValue={fields.imageString.initialValue}
                 value={image}
               />
-              {image !== undefined && image !== ' ' ? (
-                <>
-                  <Image
-                    src={image || placeHolder}
-                    width={200}
-                    height={180}
-                    alt="Product Image"
-                    className="w-[250px] h-[150px] object-cover border rounded-lg p-5"
-                  />
-                </>
+              {image ? (
+                <Image
+                  src={image}
+                  width={200}
+                  height={180}
+                  alt="Category Image"
+                  className="w-[250px] h-[150px] object-cover border rounded-lg p-5"
+                />
               ) : (
                 <>
                   <UploadDropzone

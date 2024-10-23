@@ -33,11 +33,14 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Category } from '@prisma/client';
+import { toast } from 'sonner';
 
 const CategoryCreateRoute = () => {
   const [image, setImage] = useState<string>();
   const [categories, setCategories] = useState<Category[] | null>();
   const [selectedParent, setSelectedParent] = useState<string>();
+
+  // const slug  = fields.name.name.toLowerCase().replace(/\s/g, ""-);
 
   const [lastResult, action] = useFormState(createCategory, undefined);
   const [form, fields] = useForm({
@@ -55,7 +58,7 @@ const CategoryCreateRoute = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch('/api/categories'); // Assuming you have an API route set up at /api/categories
+        const res = await fetch('/api/categories');
         const data = await res.json();
 
         if (res.ok) {
@@ -141,7 +144,7 @@ const CategoryCreateRoute = () => {
               />
             </div>
 
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-3 my-5">
               <Label>Image</Label>
               <input
                 type="hidden"
@@ -150,31 +153,28 @@ const CategoryCreateRoute = () => {
                 defaultValue={fields.imageString.initialValue}
                 value={image}
               />
-              {image !== undefined ? (
-                <>
-                  <Image
-                    src={image || placeHolder}
-                    width={200}
-                    height={180}
-                    alt="Product Image"
-                    className="w-[250px] h-[150px] object-cover border rounded-lg p-5"
-                  />
-                </>
+              {image ? (
+                <Image
+                  src={image || placeHolder}
+                  width={200}
+                  height={180}
+                  alt="Product Image"
+                  className="w-[250px] h-[150px] object-cover border rounded-lg p-5"
+                />
               ) : (
-                <>
-                  <UploadDropzone
-                    className="text-black"
-                    onClientUploadComplete={(res) => {
-                      const uploadImage = res[0].url;
-                      setImage(uploadImage);
-                      console.log(res, 'Upload Completed');
-                    }}
-                    onUploadError={() => {
-                      alert('Something went Wrong in Banner ');
-                    }}
-                    endpoint="categoryImageRoute"
-                  />
-                </>
+                <UploadDropzone
+                  className="text-black"
+                  onClientUploadComplete={(res) => {
+                    const uploadImage = res[0].url;
+                    setImage(uploadImage);
+                    console.log(res, 'Upload Completed');
+                    toast.success('Upload Successfully');
+                  }}
+                  onUploadError={() => {
+                    toast.error('Something went Wrong in Banner ');
+                  }}
+                  endpoint="categoryImageRoute"
+                />
               )}
 
               <p className="text-red-500 text-sm">

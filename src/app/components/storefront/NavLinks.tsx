@@ -16,7 +16,7 @@ export const Links = [
     icon: '',
   },
   {
-    path: '/products/men',
+    path: '/products/viral-gadgets',
     heading: 'Viral Gadget',
     icon: '',
   },
@@ -33,7 +33,7 @@ export const MenuLinks = [
     icon: '',
   },
   {
-    path: '/viralgadget',
+    path: '/viral-gadgets',
     heading: 'Viral Gadget',
     icon: '',
   },

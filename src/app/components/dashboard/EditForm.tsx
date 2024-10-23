@@ -57,6 +57,7 @@ interface iAppProps {
     price: number;
     salePrice: number;
     isFeatured: boolean;
+    tags: string[];
   };
 }
 
@@ -64,6 +65,7 @@ export default function EditForm({ data }: iAppProps) {
   const [categories, setCategories] = useState<Category[] | null>();
   const [images, setImages] = useState<string[]>(data.images);
   const [lastResult, action] = useFormState(editProduct, undefined);
+
   const [form, fields] = useForm({
     // Sync the result of last submission
 
@@ -84,6 +86,7 @@ export default function EditForm({ data }: iAppProps) {
     setImages(images.filter((_, i) => i !== index));
   };
 
+  console.log('Categories', categories);
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -197,8 +200,8 @@ export default function EditForm({ data }: iAppProps) {
                   key={fields.isFeatured.key}
                   name={fields.isFeatured.name}
                   // defaultChecked={data.isFeatured}
-                  checked={data.isFeatured}
-                  defaultValue={data.isFeatured ? 'true' : 'false'} // Convert boolean to string
+                  defaultChecked={data.isFeatured}
+                  // defaultValue={data.isFeatured} // Convert boolean to string
                 />
 
                 <p className="text-red-500 text-sm">
@@ -439,21 +442,18 @@ export default function EditForm({ data }: iAppProps) {
                 </Select>
                 <p className="text-red-500 text-sm">{fields.category.errors}</p>
               </div>
-              <div className="grid gap-3 my-3">
-                <Label htmlFor="subcategory">Subcategory (optional)</Label>
-                <Select>
-                  <SelectTrigger
-                    id="subcategory"
-                    aria-label="Select subcategory"
-                  >
-                    <SelectValue placeholder="Select subcategory" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="t-shirts">T-Shirts</SelectItem>
-                    <SelectItem value="hoodies">Hoodies</SelectItem>
-                    <SelectItem value="sweatshirts">Sweatshirts</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="grid gap-3">
+                <Label htmlFor="tags">Tags</Label>
+                <Input
+                  id="tags"
+                  name={fields.tags.name}
+                  key={fields.tags.key}
+                  value={data.tags}
+                  placeholder="Enter tags, separated by commas"
+                  className="w-full"
+                />
+
+                <p className="text-red-500 text-sm">{fields.tags.errors}</p>
               </div>
             </div>
           </CardContent>

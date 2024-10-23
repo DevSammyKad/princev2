@@ -7,74 +7,136 @@ import {
   CardDescription,
 } from '@/components/ui/card';
 import {
+  Pagination,
+  PaginationEllipsis,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationLink,
+} from '@/components/ui/pagination';
+import {
   Table,
+  TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import prisma from '@/lib/db';
+
 import React from 'react';
 
-const OrdersPage = () => {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Orders</CardTitle>
-        <CardDescription>Recent orders from your store.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Customer</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Status</TableHead>
+async function getOrders() {
+  const orders = await prisma.order.findMany({
+    orderBy: {
+      createdAt: 'desc',
+    },
+    include: {
+      user: true,
+    },
+  });
+  return orders;
+}
 
-              <TableHead className="hidden md:table-cell lg:hidden xl:table-column">
-                Date
-              </TableHead>
-              <TableHead className="text-right">Amount</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableRow>
-            <TableCell>
-              <div className="font-medium">PrathmeshSutar</div>
-              <div className="hidden text-sm text-muted-foreground md:inline">
-                liam@example.com
-              </div>
-            </TableCell>
-            <TableCell className="">Sale </TableCell>
-            <TableCell className="">
-              <Badge className="text-xs" variant="outline">
-                Approved
-              </Badge>
-            </TableCell>
-            <TableCell className="hidden md:table-cell lg:hidden xl:table-column">
-              2023-06-23
-            </TableCell>
-            <TableCell className="text-right">250.00</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>
-              <div className="font-medium">Smith Sutar</div>
-              <div className="hidden text-sm text-muted-foreground md:inline">
-                Sutar@example.com
-              </div>
-            </TableCell>
-            <TableCell className="">Refund</TableCell>
-            <TableCell className="">
-              <Badge className="text-xs" variant="outline">
-                Declined
-              </Badge>
-            </TableCell>
-            <TableCell className="hidden md:table-cell lg:hidden xl:table-column">
-              2023-06-24
-            </TableCell>
-            <TableCell className="text-right">150.00</TableCell>
-          </TableRow>
-        </Table>
-      </CardContent>
-    </Card>
+const OrdersPage = async () => {
+  const orders = await getOrders();
+
+  return (
+    <div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Orders</CardTitle>
+          <CardDescription>Recent orders from your store.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>OrderId</TableHead>
+                <TableHead>Customer Details</TableHead>
+                <TableHead>Contact Details</TableHead>
+                <TableHead>Status</TableHead>
+
+                <TableHead className="hidden md:table-cell">Date</TableHead>
+                <TableHead className="text-right">Amount</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {orders.map((order) => (
+                <TableRow key={order.id}>
+                  <TableCell>
+                    <div className="font-medium">{order.id}</div>
+                    <div className="hidden text-sm text-muted-foreground md:inline">
+                      {order.userId}
+                    </div>
+                  </TableCell>
+                  <TableCell className="">
+                    <div className="font-medium">
+                      {' '}
+                      {`${order.user?.firstName} ${order.user?.lastName}`}
+                    </div>
+                    <div className="hidden text-sm text-muted-foreground md:inline">
+                      {order.user?.address || '-'} {order.user?.city || '-'}{' '}
+                      {order.user?.state || '-'} {order.user?.pincode || '-'}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="font-medium">{order.user?.email}</div>
+                    <div className="hidden text-sm text-muted-foreground md:inline">
+                      {order.user?.phoneNumber || '-'}
+                    </div>
+                  </TableCell>
+
+                  <TableCell className="">
+                    <Badge
+                      className={`${
+                        order.status === 'paid'
+                          ? 'text-green-500 bg-green-50'
+                          : 'text-gray-500'
+                      }`}
+                      variant="outline"
+                    >
+                      {order.status.toUpperCase()}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell ">
+                    {new Intl.DateTimeFormat('en-IN').format(order.createdAt)}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    ₹{new Intl.NumberFormat('en-IN').format(order.amount / 100)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+      <Pagination className="my-10 mx-auto">
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious href="#" />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#">1</PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#" isActive>
+              2
+            </PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#">3</PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationEllipsis />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationNext href="#" />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
+    </div>
   );
 };
 

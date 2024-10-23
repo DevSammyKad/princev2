@@ -1,31 +1,49 @@
 'use client';
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
 import { Minus, Plus } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
 
-export default function ProductCounter({
-  initialCount = 1,
-}: {
-  initialCount?: number;
-}) {
-  const [count, setCount] = useState(initialCount);
+interface ProductCounterProps {
+  initialQuantity: number;
+  onQuantityChange: (quantity: number) => void;
+}
 
-  const handleIncrement: () => void = () => setCount(count + 1);
-  const handleDecrement: () => void = () => setCount(count > 1 ? count - 1 : 1);
+const ProductCounter = ({
+  initialQuantity,
+  onQuantityChange,
+}: ProductCounterProps) => {
+  const [quantity, setQuantity] = useState(initialQuantity);
+
+  const handleIncrement = () => setQuantity((prev) => prev + 1);
+  const handleDecrement = () =>
+    setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
+
+  useEffect(() => {
+    onQuantityChange(quantity); // Notify parent about quantity change
+  }, [quantity, onQuantityChange]);
 
   return (
-    <div className="flex items-center gap-2">
-      <Button variant="secondary" onClick={handleDecrement}>
-        <Minus className="w-5 h-5" size="icon" />
+    <div className="flex items-center">
+      <Button
+        variant="outline"
+        size="icon"
+        type="button"
+        onClick={handleDecrement}
+      >
+        <Minus className="h-4 w-4" />
       </Button>
-      <span>{count}</span>
-      <Button variant="secondary" onClick={handleIncrement}>
-        <Plus className="w-5 h-5" size="icon" />
+      <span className="mx-3 w-8 text-center">{quantity}</span>
+      <Button
+        variant="outline"
+        size="icon"
+        type="button"
+        onClick={handleIncrement}
+      >
+        <Plus className="h-4 w-4" />
       </Button>
-
-      {/* Hidden input field to send the count value to the server */}
-      <input type="hidden" name="quantity" value={count} />
     </div>
   );
-}
+};
+
+export default ProductCounter;

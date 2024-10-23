@@ -80,9 +80,9 @@ const ProductCreateRoute = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch('/api/categories'); // Assuming you have an API route set up at /api/categories
+        const res = await fetch('/api/allcategories'); // Assuming you have an API route set up at /api/categories
         const data = await res.json();
-
+        console.log('categry data', data);
         if (res.ok) {
           setCategories(data);
         }
@@ -149,6 +149,7 @@ const ProductCreateRoute = () => {
                   defaultValue={fields.description.initialValue}
                   className="min-h-32"
                   placeholder="write your product description here"
+                  style={{ whiteSpace: 'pre-wrap' }}
                 />
                 <p className="text-red-500 text-sm">
                   {fields.description.errors}
@@ -327,13 +328,13 @@ const ProductCreateRoute = () => {
                     <Label htmlFor="stock-1" className="sr-only">
                       Stock
                     </Label>
-                    <Input id="stock-1" type="number" defaultValue="100" />
+                    <Input id="stock-1" type="number" />
                   </TableCell>
                   <TableCell>
                     <Label htmlFor="price-1" className="sr-only">
                       Price
                     </Label>
-                    <Input id="price-1" type="number" defaultValue="99.99" />
+                    <Input id="price-1" type="number" />
                   </TableCell>
                   <TableCell>
                     <ToggleGroup
@@ -353,13 +354,13 @@ const ProductCreateRoute = () => {
                     <Label htmlFor="stock-2" className="sr-only">
                       Stock
                     </Label>
-                    <Input id="stock-2" type="number" defaultValue="143" />
+                    <Input id="stock-2" type="number" />
                   </TableCell>
                   <TableCell>
                     <Label htmlFor="price-2" className="sr-only">
                       Price
                     </Label>
-                    <Input id="price-2" type="number" defaultValue="99.99" />
+                    <Input id="price-2" type="number" />
                   </TableCell>
                   <TableCell>
                     <ToggleGroup
@@ -426,7 +427,7 @@ const ProductCreateRoute = () => {
                   <SelectTrigger id="status" aria-label="Select status">
                     <SelectValue
                       defaultValue="draft"
-                      placeholder="Select status"
+                      placeholder="Select product status"
                     />
                   </SelectTrigger>
                   <SelectContent>
@@ -448,31 +449,44 @@ const ProductCreateRoute = () => {
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
                   <SelectContent>
+                    {/* Categories with their Subcategories */}
                     {categories &&
                       categories.map((category: Category) => (
-                        <SelectItem key={category.id} value={category.slug}>
-                          {category.name}
-                        </SelectItem>
+                        <div key={category.id}>
+                          {/* Render the main category */}
+                          <SelectItem key={category.id} value={category.id}>
+                            {category.name}
+                          </SelectItem>
+
+                          {/* Render subcategories with indentation */}
+                          {/* {category.subcategories?.map((subcategory) => (
+                            <SelectItem
+                              key={subcategory.id}
+                              value={subcategory.id}
+                              className="ml-4" // Add margin to indent subcategory
+                            >
+                              {subcategory.name}
+                            </SelectItem>
+                          ))} */}
+                        </div>
                       ))}
                   </SelectContent>
                 </Select>
                 <p className="text-red-500 text-sm">{fields.category.errors}</p>
               </div>
-              <div className="grid gap-3 my-3">
-                <Label htmlFor="subcategory">Subcategory (optional)</Label>
-                <Select>
-                  <SelectTrigger
-                    id="subcategory"
-                    aria-label="Select subcategory"
-                  >
-                    <SelectValue placeholder="Select subcategory" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="t-shirts">T-Shirts</SelectItem>
-                    <SelectItem value="hoodies">Hoodies</SelectItem>
-                    <SelectItem value="sweatshirts">Sweatshirts</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="grid gap-3">
+                <div className="grid gap-3">
+                  <Label htmlFor="tags">Tags</Label>
+                  <Input
+                    id="tags"
+                    name={fields.tags.name}
+                    defaultValue={fields.tags.initialValue as string}
+                    placeholder="Enter tags, separated by commas"
+                    className="w-full"
+                  />
+
+                  <p className="text-red-500 text-sm">{fields.tags.errors}</p>
+                </div>
               </div>
             </div>
           </CardContent>

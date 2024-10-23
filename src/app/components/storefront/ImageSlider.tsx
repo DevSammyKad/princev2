@@ -57,9 +57,11 @@ export default function ImageSlider({ images }: iAppProps) {
             </Button>
           </div>
         </div>
-        <div className="flex items-center justify-start">
+        <div className="flex items-center justify-center">
           <div
-            className={`grid grid-cols-3 grid-cols-auto-fit min-w-[100px] gap-5 my-10 mx-2`}
+            className={`grid grid-cols-${
+              images.length || 5
+            } grid-cols-auto-fit min-w-[100px] gap-5 my-10 mx-2`}
           >
             {images.map((image, index) => (
               <div
@@ -68,7 +70,7 @@ export default function ImageSlider({ images }: iAppProps) {
                   index === mainImageIndex
                     ? 'ring-2  ring-blue-500'
                     : 'border-gray-200',
-                  'relative overflow-hidden p-1 rounded-lg cursor-pointer'
+                  'relative overflow-hidden p-1  rounded-lg cursor-pointer'
                 )}
                 onClick={() => handleImageClick(index)}
               >

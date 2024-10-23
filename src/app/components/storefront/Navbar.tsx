@@ -12,34 +12,25 @@ import Image from 'next/image';
 import { NavLinks } from './NavLinks';
 import { Cart } from '@/lib/interfaces';
 import { redis } from '@/lib/redis';
-import { cn } from '@/lib/utils';
+
 import {
   Drawer,
   DrawerClose,
   DrawerContent,
-  DrawerDescription,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
 } from '@/components/ui/drawer';
 import DrawerCart from './DrawerCart';
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet';
+
 import { Input } from '@/components/ui/input';
 import { CheckOutButton } from '../dashboard/SubmitButton';
+import { CartSheet } from './CartSheet';
 
 export default async function Navbar() {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
-
-  console.log('User ID:', user?.id);
 
   const cart: Cart | null = await redis.get(`cart-${user?.id}`);
 
@@ -61,16 +52,16 @@ export default async function Navbar() {
                 />
               </Link>
             </div>
-            <NavLinks />
+            {/* <NavLinks /> */}
           </div>
-          <div className="max-sm:hidden">
+          <div className="ml-2">
             <form className="ml-auto flex-1 sm:flex-initial items-center">
               <div className="relative items-center">
-                <Search className="absolute left-2.5 top-2.5 trans h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-2.5 top-[50%] -translate-y-[50%] h-4 w-4 text-muted-foreground" />
                 <Input
                   type="search"
                   placeholder="Search products..."
-                  className="pl-8 sm:w-[300px] md:w-[200px] lg:w-[500px] border-blue-500"
+                  className="pl-8 max-sm:w-[200px] sm:w-[300px] md:w-[200px] lg:w-[500px] "
                 />
               </div>
             </form>
@@ -79,32 +70,39 @@ export default async function Navbar() {
           <div className="md:block">
             {user ? (
               <div className="ml-4 space-x-2 flex items-center md:ml-6">
-                <Drawer>
-                  <DrawerTrigger asChild>
-                    <Button variant="secondary" className="relative">
-                      <ShoppingBag />
-                      {total !== undefined && total > 0 && (
-                        <span className="w-2 h-2 top-1 rounded-full animate-pulse right-2 absolute bg-blue-400" />
-                      )}
-                      <span>{total}</span>
-                    </Button>
-                  </DrawerTrigger>
+                {' '}
+                <div className="max-sm:hidden">
+                  <CartSheet />
+                </div>
+                <div className="sm:hidden">
+                  <Drawer>
+                    <DrawerTrigger asChild>
+                      <Button variant="secondary" className="relative">
+                        <ShoppingBag />
+                        {total !== undefined && total > 0 && (
+                          <span className="w-2 h-2 top-1 rounded-full animate-pulse right-2 absolute bg-blue-400" />
+                        )}
+                        <span>{total}</span>
+                      </Button>
+                    </DrawerTrigger>
 
-                  <DrawerContent>
-                    <DrawerHeader>
-                      <DrawerTitle>Shopping Cart</DrawerTitle>
-                      <DrawerCart />
-                    </DrawerHeader>
-                    <DrawerFooter>
-                      <div className="flex justify-between items-center ">
-                        <Button variant="outline">Continue Shopping</Button>
+                    <DrawerContent>
+                      <DrawerHeader>
+                        <DrawerTitle>Shopping Cart</DrawerTitle>
+                        <DrawerCart />
+                      </DrawerHeader>
+                      <DrawerFooter>
+                        <DrawerClose>
+                          <div className="flex justify-between items-center ">
+                            <Button variant="outline">Continue Shopping</Button>
 
-                        <CheckOutButton />
-                      </div>
-                    </DrawerFooter>
-                  </DrawerContent>
-                </Drawer>
-
+                            <CheckOutButton />
+                          </div>
+                        </DrawerClose>
+                      </DrawerFooter>
+                    </DrawerContent>
+                  </Drawer>
+                </div>
                 <Link href="/account">
                   <Button variant="ghost" size="icon">
                     <User2Icon />

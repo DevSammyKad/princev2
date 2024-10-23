@@ -1,8 +1,8 @@
 'use client';
 import { useFormStatus } from 'react-dom';
 import { Button } from '@/components/ui/button';
-import { Loader2, ShoppingBag } from 'lucide-react';
-import { useState } from 'react';
+import { Loader2, RefreshCcw, ShoppingBag } from 'lucide-react';
+
 import { checkOut } from '@/app/actions';
 
 declare global {
@@ -19,12 +19,13 @@ interface CheckOutResponse {
 
 export function CheckOutButton() {
   const { pending } = useFormStatus();
-  const [orderDetails, setOrderDetails] = useState<CheckOutResponse | null>(
-    null
-  );
+
+  // const [orderDetails, setOrderDetails] = useState<CheckOutResponse | null>(
+  //   null
+  // );
 
   // This function will handle the Razorpay checkout popup
-  const handleRazorpayCheckout = (
+  const handleRazorpayCheckout = async (
     orderId: string,
     totalAmount: number,
     userEmail: string | null
@@ -36,9 +37,27 @@ export function CheckOutButton() {
       name: 'Prince Glow',
       description: 'Purchase Description',
       order_id: orderId, // This is the orderId returned from Razorpay
-      handler: function (response: any) {
+      handler: async function (response: any) {
         // Payment was successful, you can verify the payment server-side here
-        console.log(response);
+
+        const paymentResponse = await fetch('/api/razorpay', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            razorpayPaymentId: response.razorpay_payment_id,
+            orderId: orderId,
+            amount: totalAmount,
+            userEmail: userEmail,
+          }),
+        });
+
+        if (paymentResponse.ok) {
+          console.log('Order created successfully after payment.');
+        } else {
+          console.error('Failed to create order.');
+        }
       },
       prefill: {
         email: userEmail ?? '', // Handle null email case
@@ -55,24 +74,20 @@ export function CheckOutButton() {
   // Handle form submission to trigger the Razorpay checkout
   const handleCheckout = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    try {
+      const response: CheckOutResponse | null = await checkOut();
 
-    // Call the server-side action to get the order details
-    const response: CheckOutResponse | null = await checkOut();
-
-    if (response && response.orderId && response.totalAmount) {
-      setOrderDetails({
-        orderId: response.orderId,
-        totalAmount: response.totalAmount,
-        userEmail: response.userEmail,
-      });
-      handleRazorpayCheckout(
-        response.orderId,
-        response.totalAmount,
-        response.userEmail
-      );
-      console.log(orderDetails);
-    } else {
-      console.error('Order details are missing or undefined.');
+      if (response && response.orderId && response.totalAmount) {
+        await handleRazorpayCheckout(
+          response.orderId,
+          response.totalAmount,
+          response.userEmail
+        );
+      } else {
+        console.error('Failed to get Razorpay order details.');
+      }
+    } catch (error) {
+      console.error('Error during checkout:', error);
     }
   };
 
@@ -112,12 +127,17 @@ const SubmitButton = ({ text, variant }: buttonProps) => {
   return (
     <>
       {pending ? (
-        <Button disabled={pending}>
+        <Button disabled={pending} className=" rounded-xl gap-4 my-5">
           <Loader2 className="mr-2 h-4 w-4 animate-spin " />{' '}
           {` ${text} Product`}
         </Button>
       ) : (
-        <Button variant={variant} size="lg" type="submit" className="my-5">
+        <Button
+          variant={variant}
+          size="lg"
+          type="submit"
+          className="my-5 rounded-xl gap-4"
+        >
           {` ${text} Product`}
         </Button>
       )}
@@ -125,6 +145,26 @@ const SubmitButton = ({ text, variant }: buttonProps) => {
   );
 };
 export default SubmitButton;
+
+export function UpdateUserButton() {
+  const { pending } = useFormStatus();
+  return (
+    <Button
+      disabled={pending} // Only disable when pending
+      size="lg"
+      type="submit"
+    >
+      {pending ? (
+        <>
+          <Loader2 className="w-5 h-5 animate-spin" size="icon" />
+          Please Wait
+        </>
+      ) : (
+        'Update Account'
+      )}
+    </Button>
+  );
+}
 
 export function ShoppingBagButton() {
   const { pending } = useFormStatus();

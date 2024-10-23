@@ -4,8 +4,24 @@ import { NextResponse } from 'next/server';
 export async function GET() {
   try {
     const categories = await prisma.category.findMany({
-      where: { parentId: null },
-      include: { subcategories: true },
+      where: {
+        parentId: null, // Ensure we're only getting top-level categories
+      },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        imageString: true, // If you want the image URL as well
+        createdAt: true,
+        updatedAt: true,
+        subcategories: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        }, // Optionally include subcategories
+      },
     });
     return NextResponse.json(categories); // Corrected the usage of NextResponse.json
   } catch (error) {

@@ -1,7 +1,12 @@
 'use server';
 import { redirect } from 'next/navigation';
 import { parseWithZod } from '@conform-to/zod';
-import { bannerSchema, categorySchema, productSchema } from '@/lib/zodSchemas';
+import {
+  bannerSchema,
+  categorySchema,
+  productSchema,
+  userSchema,
+} from '@/lib/zodSchemas';
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
 import prisma from '@/lib/db';
 import { ProductStatus } from '@prisma/client';
@@ -9,6 +14,43 @@ import { redis } from '@/lib/redis';
 import { Cart } from '@/lib/interfaces';
 import { revalidatePath } from 'next/cache';
 import { razorpay } from '@/lib/razorpay';
+
+export async function updateUser(prevState: unknown, formData: FormData) {
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
+
+  if (!user) {
+    return redirect('/api/auth/login');
+  }
+
+  const submission = parseWithZod(formData, {
+    schema: userSchema,
+  });
+  console.log('Form Data:', formData.get('userId') as string);
+
+  if (submission.status !== 'success') {
+    return submission.reply();
+  }
+
+  const userId = formData.get('userId') as string;
+  await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      firstName: submission.value.firstName,
+      lastName: submission.value.lastName,
+      email: submission.value.email,
+      phoneNumber: submission.value.phoneNumber,
+      address: submission.value.address,
+      city: submission.value.city,
+      state: submission.value.state,
+      country: submission.value.country,
+      pincode: submission.value.pincode,
+      profileImage: submission.value.profileImage,
+    },
+  });
+}
 
 export async function createCategory(prevState: unknown, formData: FormData) {
   const { getUser } = getKindeServerSession();
@@ -167,7 +209,6 @@ export async function createProduct(prevState: unknown, formData: FormData) {
   if (!category) {
     throw new Error('Category not found');
   }
-
   await prisma.product.create({
     data: {
       name: submission.value.name,
@@ -177,7 +218,7 @@ export async function createProduct(prevState: unknown, formData: FormData) {
       price: Number(submission.value.price),
       salePrice: Number(submission.value.salePrice),
       images: flattenUrls,
-      isFeatured: Boolean(submission.value.isFeatured),
+      isFeatured: Boolean(submission.value.isFeatured === true ? true : false),
       category: { connect: { id: category.id } },
     },
   });
@@ -224,7 +265,7 @@ export async function editProduct(prevState: unknown, formData: FormData) {
       price: submission.value.price,
       salePrice: submission.value.salePrice,
       images: flattenUrls,
-      isFeatured: submission.value.isFeatured, // === 'true' ? true : false,
+      isFeatured: submission.value.isFeatured === true ? true : false,
       category: { connect: { id: category.id } },
     },
   });
@@ -291,12 +332,17 @@ export async function deleteBanner(fromData: FormData) {
   redirect('/dashboard/banners');
 }
 
-export async function addItem(productId: string) {
+export async function addItem(productId: string, formData: FormData) {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
   if (!user) {
     return redirect('/');
+  }
+
+  const quantity = parseInt(formData.get('quantity') as string, 10);
+  if (!quantity || quantity <= 0) {
+    throw new Error('Invalid Quantity');
   }
 
   let cart: Cart | null = await redis.get(`cart-${user.id}`);
@@ -330,7 +376,7 @@ export async function addItem(productId: string) {
           id: selectedProduct.id,
           imageString: selectedProduct.images[0],
           name: selectedProduct.name,
-          quantity: 1,
+          quantity: quantity,
         },
       ],
     };
@@ -340,7 +386,7 @@ export async function addItem(productId: string) {
     myCart.items = cart.items.map((item) => {
       if (item.id === productId) {
         itemFound = true;
-        item.quantity + 1;
+        item.quantity += quantity;
       }
       return item;
     });
@@ -352,7 +398,7 @@ export async function addItem(productId: string) {
         id: selectedProduct.id,
         imageString: selectedProduct.images[0], // Assuming there's at least 1 image
         name: selectedProduct.name,
-        quantity: 1,
+        quantity: quantity,
       });
     }
   }
@@ -416,7 +462,8 @@ export async function checkOut() {
       },
     });
 
-    console.log(order);
+    console.log('Order Details', order);
+
     // Return order details for client-side checkout
     return { orderId: order.id, totalAmount, userEmail: user.email };
   } else {

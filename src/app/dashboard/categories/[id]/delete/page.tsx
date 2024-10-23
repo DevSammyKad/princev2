@@ -1,4 +1,4 @@
-import { deleteCategory, deleteProduct } from '@/app/actions';
+import { deleteCategory } from '@/app/actions';
 import SubmitButton from '@/app/components/dashboard/SubmitButton';
 import { Button } from '@/components/ui/button';
 import {

@@ -1,27 +1,48 @@
-// app/api/razorpay/route.ts
-
-import { checkOut } from '@/app/actions';
+// api/razorpay/route.ts
+import prisma from '@/lib/db';
+import { redis } from '@/lib/redis';
+import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
+import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 import { NextResponse } from 'next/server';
-
-// Handle POST requests
 
 export async function POST(request: Request) {
   try {
-    const data = await request.json(); // Assuming you're sending JSON data
-    // Call checkOut without passing data if it doesn't accept parameters
-    const result = await checkOut(); // No arguments passed
+    const { getUser } = getKindeServerSession();
+    const user = await getUser();
 
-    return NextResponse.json(result, { status: 200 }); // Return success response
+    if (!user) {
+      return redirect('/');
+    }
+
+    const { razorpayPaymentId, orderId, amount, userEmail } =
+      await request.json();
+
+    // Confirm payment with Razorpay API if needed here (optional)
+
+    // Create order after payment is confirmed
+    const newOrder = await prisma.order.create({
+      data: {
+        id: orderId,
+        status: 'paid',
+        amount: amount,
+        user: {
+          connect: { email: userEmail },
+        },
+      },
+    });
+    console.log('New Order', newOrder);
+
+    await redis.del(`cart-${user.id}`);
+
+    revalidatePath('/');
+
+    return NextResponse.json({ success: true, newOrder }, { status: 200 });
   } catch (error) {
-    console.error('Error processing checkout:', error);
-    return NextResponse.json({ error: 'Checkout failed' }, { status: 500 }); // Return error response
+    console.error('Error creating order after payment:', error);
+    return NextResponse.json(
+      { error: 'Order creation failed' },
+      { status: 500 }
+    );
   }
-}
-
-// If you want to handle other methods like GET, you can add them as well
-export async function GET(request: Request) {
-  return NextResponse.json(
-    { message: 'GET method not implemented' },
-    { status: 405 }
-  );
 }

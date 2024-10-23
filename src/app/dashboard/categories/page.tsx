@@ -76,7 +76,9 @@ const page = async () => {
                   </TableHead>
                   <TableHead>Name</TableHead>
                   <TableHead>parent Id</TableHead>
-                  <TableHead>Category Slug</TableHead>
+                  <TableHead className="hidden md:table-cell">
+                    Category Slug
+                  </TableHead>
                   <TableHead>Products List</TableHead>
                   <TableHead className="hidden md:table-cell">
                     Created at
