@@ -14,6 +14,7 @@ import { redis } from '@/lib/redis';
 import { Cart } from '@/lib/interfaces';
 import { revalidatePath } from 'next/cache';
 import { razorpay } from '@/lib/razorpay';
+import { json } from 'stream/consumers';
 
 export async function updateUser(prevState: unknown, formData: FormData) {
   const { getUser } = getKindeServerSession();
@@ -209,6 +210,9 @@ export async function createProduct(prevState: unknown, formData: FormData) {
   if (!category) {
     throw new Error('Category not found');
   }
+
+  // const tagNames = submission.value.tags.split(',').map((tag: string) => tag.trim());
+
   await prisma.product.create({
     data: {
       name: submission.value.name,
@@ -450,6 +454,12 @@ export async function checkOut() {
         0
       ) * 100; // Total amount in paise (multiply by 100)
 
+    // Create a comma-separated string of product IDs
+    const productDetails = cart.items.map((item) => ({
+      productIds: item.id,
+      quantity: item.quantity,
+    }));
+
     const receiptId = `order_rcptid_${user.id}`.substring(0, 40);
     // Create an order with Razorpay
     const order = await razorpay.orders.create({
@@ -459,13 +469,19 @@ export async function checkOut() {
       notes: {
         userId: user.id,
         userEmail: user.email,
+        productDetails: JSON.stringify(productDetails),
       },
     });
 
-    console.log('Order Details', order);
+    console.log('Payment Order Details', order);
 
     // Return order details for client-side checkout
-    return { orderId: order.id, totalAmount, userEmail: user.email };
+    return {
+      orderId: order.id,
+      totalAmount,
+      userEmail: user.email,
+      productDetails,
+    };
   } else {
     console.error('Cart is empty or not found.');
     return null;

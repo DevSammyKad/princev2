@@ -115,7 +115,7 @@ export default function Footer() {
             <p>
               Designed by
               <a href="https://technolize.in " className="text-blue-500">
-                Technolize Pvt. Ltd
+                &nbsp;Technolize Pvt. Ltd
               </a>
             </p>
           </div>

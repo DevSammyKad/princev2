@@ -48,7 +48,7 @@ export default async function ProductIdRoute({
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-20 items-start">
         <div>
           <ImageSlider images={data.images} />
         </div>
@@ -100,18 +100,25 @@ export default async function ProductIdRoute({
           </div>
         </div>
       </div>
-      <div className="mt-12 border-t border-gray-200 pt-6">
-        <h2 className="text-2xl font-semibold mb-4">Product Description</h2>
-        <p className="text-gray-700 whitespace-pre-wrap">{data.description}</p>
-      </div>
-      <div className="mt-12 space-y-4">
-        <h2 className="text-2xl font-semibold">Features</h2>
-        <ul className="list-disc list-inside text-gray-700 space-y-2">
-          <li>High-quality organic cotton material</li>
-          <li>Durable and long-lasting construction</li>
-          <li>Easy to clean and maintain</li>
-          <li>Modern fit for a stylish look</li>
-        </ul>
+      <div className="grid grid-cols-2 gap-10">
+        {' '}
+        <div className="mt-12 border-t border-gray-200 pt-6">
+          <h2 className="text-2xl font-semibold mb-4">Product Description</h2>
+          <p className="text-gray-700 whitespace-pre-wrap">
+            {data.description}
+          </p>
+        </div>
+        <div className="mt-12 space-y-4 pt-6">
+          <h2 className="text-2xl font-semibold">Why You'll Love This</h2>
+          <ul className="list-disc list-inside text-gray-700 space-y-2">
+            <li>Perfect for binge-watching your favorite shows in style.</li>
+            <li>Designed for ultimate comfort during all-day wear.</li>
+            <li>Bold, eye-catching design that speaks to your fandom.</li>
+            <li>
+              Effortlessly blends fun with fashion – a must-have for every fan.
+            </li>
+          </ul>
+        </div>
       </div>
       <div className="mt-12">
         <h2 className="text-2xl font-semibold mb-6">You May Also Like</h2>

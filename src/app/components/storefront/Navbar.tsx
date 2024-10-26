@@ -38,7 +38,7 @@ export default async function Navbar() {
 
   return (
     <>
-      <header className="bg-white my-5 ">
+      <header className="bg-white my-5">
         <nav className=" mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
           <div className="flex items-center">
             <div className="flex-shrink-0">
@@ -54,22 +54,23 @@ export default async function Navbar() {
             </div>
             {/* <NavLinks /> */}
           </div>
-          <div className="ml-2">
-            <form className="ml-auto flex-1 sm:flex-initial items-center">
-              <div className="relative items-center">
+          <div className="ml-4">
+            <form className="ml-auto flex items-center">
+              <div className="relative items-center w-full ">
                 <Search className="absolute left-2.5 top-[50%] -translate-y-[50%] h-4 w-4 text-muted-foreground" />
                 <Input
                   type="search"
                   placeholder="Search products..."
-                  className="pl-8 max-sm:w-[200px] sm:w-[300px] md:w-[200px] lg:w-[500px] "
+                  className="pl-8 max-sm:[200px] md:w-[500px] lg:w-[1200px] border-black border focus:bg-none focus:ring-0 focus:border-none"
+                  // max-sm:w-[200px] sm:w-[300px] md:w-[200px] lg:w-[500px]
                 />
               </div>
             </form>
           </div>
 
-          <div className="md:block">
+          <div className="block ">
             {user ? (
-              <div className="ml-4 space-x-2 flex items-center md:ml-6">
+              <div className="space-x-2 flex items-center ">
                 {' '}
                 <div className="max-sm:hidden">
                   <CartSheet />
@@ -77,8 +78,9 @@ export default async function Navbar() {
                 <div className="sm:hidden">
                   <Drawer>
                     <DrawerTrigger asChild>
-                      <Button variant="secondary" className="relative">
+                      <Button variant="secondary" className="relative gap-1">
                         <ShoppingBag />
+                        <p className="max-sm:hidden">Cart</p>
                         {total !== undefined && total > 0 && (
                           <span className="w-2 h-2 top-1 rounded-full animate-pulse right-2 absolute bg-blue-400" />
                         )}
@@ -103,9 +105,11 @@ export default async function Navbar() {
                     </DrawerContent>
                   </Drawer>
                 </div>
-                <Link href="/account">
-                  <Button variant="ghost" size="icon">
+                <Link href="/account" className="flex items-center gap-2">
+                  <Button variant="ghost">
+                    {' '}
                     <User2Icon />
+                    <p className="hidden sm:block">Account</p>
                   </Button>
                 </Link>
               </div>

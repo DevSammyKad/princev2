@@ -15,20 +15,18 @@ interface CheckOutResponse {
   orderId: string;
   totalAmount: number;
   userEmail: string | null;
+  productDetails: { productId: string; quantity: number }[];
 }
 
 export function CheckOutButton() {
   const { pending } = useFormStatus();
 
-  // const [orderDetails, setOrderDetails] = useState<CheckOutResponse | null>(
-  //   null
-  // );
-
   // This function will handle the Razorpay checkout popup
   const handleRazorpayCheckout = async (
     orderId: string,
     totalAmount: number,
-    userEmail: string | null
+    userEmail: string | null,
+    productDetails: { productId: string; quantity: number }[]
   ) => {
     const options = {
       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID, // Replace with your Razorpay key
@@ -50,6 +48,7 @@ export function CheckOutButton() {
             orderId: orderId,
             amount: totalAmount,
             userEmail: userEmail,
+            productDetails,
           }),
         });
 
@@ -75,13 +74,19 @@ export function CheckOutButton() {
   const handleCheckout = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      const response: CheckOutResponse | null = await checkOut();
+      const response = await checkOut();
 
-      if (response && response.orderId && response.totalAmount) {
+      if (
+        response &&
+        response.orderId &&
+        response.totalAmount &&
+        response.productDetails
+      ) {
         await handleRazorpayCheckout(
           response.orderId,
           response.totalAmount,
-          response.userEmail
+          response.userEmail,
+          response.productDetails as any
         );
       } else {
         console.error('Failed to get Razorpay order details.');

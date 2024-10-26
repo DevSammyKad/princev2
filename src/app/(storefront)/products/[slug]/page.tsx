@@ -1,5 +1,7 @@
 import { ProductCard } from '@/app/components/storefront/ProductCard';
 import prisma from '@/lib/db';
+import { ChevronRight } from 'lucide-react';
+import Link from 'next/link';
 
 // Helper function to get all subcategories of a top-level category
 async function getSubcategories(categoryId: string) {
@@ -83,7 +85,26 @@ export default async function CategoriesPage({
 
   return (
     <section className="mx-auto">
-      <h1>{title}</h1>
+      <div className="my-5">
+        <ol className="flex items-center whitespace-nowrap">
+          <li className="inline-flex items-center">
+            <Link
+              className="flex items-center text-sm text-gray-500 hover:text-blue-600 focus:outline-none focus:text-blue-600 dark:text-neutral-500 dark:hover:text-blue-500 dark:focus:text-blue-500"
+              href="/"
+            >
+              Home
+            </Link>
+            <ChevronRight className="text-gray-400 h-4 w-4 mx-3" />
+          </li>
+          <li
+            className="inline-flex items-center text-sm font-semibold text-gray-800 truncate dark:text-neutral-200"
+            aria-current="page"
+          >
+            {title}
+          </li>
+        </ol>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 ">
         {data.map((item, index) => (
           <ProductCard item={item} key={item.id || `product-${index}`} />

@@ -21,21 +21,21 @@ const CategoriesNavbar = async () => {
     },
   });
   return (
-    <div className="flex items-center justify-center my-5">
-      <NavigationMenu className="w-full">
-        <NavigationMenuList className="w-full space-x-5">
+    <div className="flex items-center justify-center  ">
+      <NavigationMenu className="w-full text-black">
+        <NavigationMenuList className="w-full space-x-5 text-black">
           {categories.map((category) => (
-            <NavigationMenuItem key={category.id}>
+            <NavigationMenuItem key={category.id} className="text-black">
               {category.subcategories.length > 0 ? (
                 <>
-                  <NavigationMenuTrigger className="text-blue-500">
+                  <NavigationMenuTrigger className="text-black hover:text-blue-500">
                     {category.name}
                   </NavigationMenuTrigger>
                   <NavigationMenuContent className="rounded-md bg-gradient-to-b from-muted/50 to-muted  w-full  no-underline outline-none focus:shadow-md flex ">
                     <div className="flex items-center justify-center">
                       <NavigationMenuLink asChild>
                         <Link href={`/products/${category.slug}`}>
-                          <div className="my-2 text-lg font-medium border-2 border-red-600 flex w-full space-x-5 px-3">
+                          <div className="my-2 text-lg font-medium flex w-full space-x-5 px-3">
                             {category.subcategories.map((subcategory) => (
                               <Link href={`/products/${subcategory.slug}`}>
                                 <div
@@ -53,7 +53,9 @@ const CategoriesNavbar = async () => {
                                       className="max-h-32 max-w-32 rounded-full object-cover"
                                     />
                                   </div>
-                                  <span>{subcategory.name}</span>
+                                  <span className="text-black hover:text-blue-500">
+                                    {subcategory.name}
+                                  </span>
                                 </div>
                               </Link>
                             ))}

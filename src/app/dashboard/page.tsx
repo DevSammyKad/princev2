@@ -36,6 +36,19 @@ async function getActiveProductCount() {
   return count;
 }
 
+async function getRevenueCount() {
+  const totalRevenue = await prisma.order.aggregate({
+    where: {
+      status: 'paid',
+    },
+    _sum: {
+      amount: true,
+    },
+  });
+
+  return totalRevenue._sum.amount || 0;
+}
+
 async function getActiveUsersCount() {
   const count = await prisma.user.count({
     where: {
@@ -44,9 +57,32 @@ async function getActiveUsersCount() {
   });
   return count;
 }
-export default function Dashboard() {
+
+async function getTotalOrders() {
+  const count = await prisma.order.count();
+  return count;
+}
+
+export default async function Dashboard() {
   const count = getActiveProductCount();
   const activeUsers = getActiveUsersCount();
+  const totalOrders = getTotalOrders();
+  const totalRevenue = await getRevenueCount();
+
+  const formattedRevenue = (totalRevenue / 100).toLocaleString('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+  });
+
+  const orders = await prisma.order.findMany({
+    include: {
+      user: true,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+    take: 5,
+  });
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -60,7 +96,10 @@ export default function Dashboard() {
               <IndianRupee className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">45,231.89</div>
+              <div className="text-2xl font-bold">
+                {new Intl.NumberFormat('en-IN').format(totalRevenue / 100) ||
+                  '0'}
+              </div>
               <p className="text-xs text-muted-foreground">
                 +20.1% from last month
               </p>
@@ -72,7 +111,8 @@ export default function Dashboard() {
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">33</div>
+              <div className="text-2xl font-bold">{totalOrders}</div>
+
               <p className="text-xs text-muted-foreground">
                 +180.1% from last month
               </p>
@@ -126,120 +166,48 @@ export default function Dashboard() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Customer</TableHead>
-                    <TableHead className="hidden xl:table-column">
-                      Type
-                    </TableHead>
-                    <TableHead className="hidden xl:table-column">
-                      Status
-                    </TableHead>
+                    <TableHead className="">PhoneNumber</TableHead>
+                    <TableHead className="">Status</TableHead>
                     <TableHead className="hidden xl:table-column">
                       Date
                     </TableHead>
                     <TableHead className="text-right">Amount</TableHead>
                   </TableRow>
                 </TableHeader>
-                <TableBody>
-                  <TableRow>
-                    <TableCell>
-                      <div className="font-medium">Liam Johnson</div>
-                      <div className="hidden text-sm text-muted-foreground md:inline">
-                        liam@example.com
-                      </div>
-                    </TableCell>
-                    <TableCell className="hidden xl:table-column">
-                      Sale
-                    </TableCell>
-                    <TableCell className="hidden xl:table-column">
-                      <Badge className="text-xs" variant="outline">
-                        Approved
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell lg:hidden xl:table-column">
-                      2023-06-23
-                    </TableCell>
-                    <TableCell className="text-right">250.00</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>
-                      <div className="font-medium">Olivia Smith</div>
-                      <div className="hidden text-sm text-muted-foreground md:inline">
-                        olivia@example.com
-                      </div>
-                    </TableCell>
-                    <TableCell className="hidden xl:table-column">
-                      Refund
-                    </TableCell>
-                    <TableCell className="hidden xl:table-column">
-                      <Badge className="text-xs" variant="outline">
-                        Declined
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell lg:hidden xl:table-column">
-                      2023-06-24
-                    </TableCell>
-                    <TableCell className="text-right">150.00</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>
-                      <div className="font-medium">Noah Williams</div>
-                      <div className="hidden text-sm text-muted-foreground md:inline">
-                        noah@example.com
-                      </div>
-                    </TableCell>
-                    <TableCell className="hidden xl:table-column">
-                      Subscription
-                    </TableCell>
-                    <TableCell className="hidden xl:table-column">
-                      <Badge className="text-xs" variant="outline">
-                        Approved
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell lg:hidden xl:table-column">
-                      2023-06-25
-                    </TableCell>
-                    <TableCell className="text-right">350.00</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>
-                      <div className="font-medium">Emma Brown</div>
-                      <div className="hidden text-sm text-muted-foreground md:inline">
-                        emma@example.com
-                      </div>
-                    </TableCell>
-                    <TableCell className="hidden xl:table-column">
-                      Sale
-                    </TableCell>
-                    <TableCell className="hidden xl:table-column">
-                      <Badge className="text-xs" variant="outline">
-                        Approved
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell lg:hidden xl:table-column">
-                      2023-06-26
-                    </TableCell>
-                    <TableCell className="text-right">450.00</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell>
-                      <div className="font-medium">Liam Johnson</div>
-                      <div className="hidden text-sm text-muted-foreground md:inline">
-                        liam@example.com
-                      </div>
-                    </TableCell>
-                    <TableCell className="hidden xl:table-column">
-                      Sale
-                    </TableCell>
-                    <TableCell className="hidden xl:table-column">
-                      <Badge className="text-xs" variant="outline">
-                        Approved
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell lg:hidden xl:table-column">
-                      2023-06-27
-                    </TableCell>
-                    <TableCell className="text-right">550.00</TableCell>
-                  </TableRow>
-                </TableBody>
+                {orders.map((order) => (
+                  <TableBody>
+                    <TableRow>
+                      <TableCell>
+                        <div className="font-medium">
+                          {order.user?.firstName} {order.user?.lastName}
+                        </div>
+                        <div className="hidden text-sm text-muted-foreground md:inline">
+                          {order.user?.email}
+                        </div>
+                      </TableCell>
+                      <TableCell className="">
+                        {order.user?.phoneNumber}
+                      </TableCell>
+                      <TableCell className="">
+                        <Badge className="text-xs" variant="outline">
+                          {order.status.toUpperCase()}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell lg:hidden xl:table-column">
+                        {new Intl.DateTimeFormat('en-IN').format(
+                          order.createdAt
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {/* <IndianRupee className="h-4 w-4 text-muted-foreground" /> */}
+
+                        {new Intl.NumberFormat('en-IN').format(
+                          order.amount / 100
+                        ) || '0'}
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                ))}
               </Table>
             </CardContent>
           </Card>

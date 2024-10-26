@@ -39,12 +39,15 @@ export async function CartSheet() {
     <>
       <Sheet>
         <SheetTrigger asChild>
-          <Button variant="secondary" className="relative">
+          <Button variant="secondary" className="relative gap-2">
             <ShoppingBag />
+            Cart
             {total !== undefined && total > 0 && (
-              <span className="w-2 h-2 top-1 rounded-full animate-pulse right-2 absolute bg-blue-400" />
+              <>
+                <span className="w-2 h-2 top-1 rounded-full animate-pulse right-2 absolute bg-blue-400" />
+                <span>{`(${total})`}</span>
+              </>
             )}
-            <span>{total}</span>
           </Button>
         </SheetTrigger>
         {cart?.items.length === 0 ? (
@@ -79,15 +82,16 @@ export async function CartSheet() {
               <DrawerCart />
             </div>
             <SheetFooter className="flex-shrink-0">
-              <SheetClose>
+              <SheetClose asChild>
                 <div className="flex justify-between items-center space-x-5 w-full">
                   <Button variant="outline">Continue Shopping</Button>
 
                   {dbUser?.address === null ? (
-                    <>
-                      {' '}
-                      <Button>Fir</Button>{' '}
-                    </>
+                    <div>
+                      <Link href={'/account'}>
+                        <Button>First Fill Address</Button>
+                      </Link>
+                    </div>
                   ) : (
                     <CheckOutButton />
                   )}

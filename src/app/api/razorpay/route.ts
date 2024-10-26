@@ -15,7 +15,7 @@ export async function POST(request: Request) {
       return redirect('/');
     }
 
-    const { razorpayPaymentId, orderId, amount, userEmail } =
+    const { razorpayPaymentId, orderId, amount, userEmail, productDetails } =
       await request.json();
 
     // Confirm payment with Razorpay API if needed here (optional)
@@ -29,12 +29,12 @@ export async function POST(request: Request) {
         user: {
           connect: { email: userEmail },
         },
+        productDetails,
       },
     });
-    console.log('New Order', newOrder);
+    console.log('New Order Created', newOrder);
 
     await redis.del(`cart-${user.id}`);
-
     revalidatePath('/');
 
     return NextResponse.json({ success: true, newOrder }, { status: 200 });
