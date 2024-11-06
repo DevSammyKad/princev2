@@ -26,6 +26,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import prisma from '@/lib/db';
+import { cn } from '@/lib/utils';
 
 async function getActiveProductCount() {
   const count = await prisma.product.count({
@@ -63,11 +64,55 @@ async function getTotalOrders() {
   return count;
 }
 
+const fetchRazorpayOrder = async () => {
+  const keyId = process.env.RAZORPAY_KEY_ID;
+  const keySecret = process.env.RAZORPAY_KEY_SECRET;
+  const encodedCredentials = Buffer.from(`${keyId}:${keySecret}`).toString(
+    'base64'
+  );
+
+  const URL = ' https://api.razorpay.com/v1/orders?count=5';
+  const response = await fetch(URL, {
+    method: 'GET',
+    headers: {
+      authorization: `Basic${encodedCredentials}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch order: ${response.statusText}`);
+  }
+
+  const razorpayOrders = await response.json();
+  return razorpayOrders;
+};
+
+interface RazorpayOrderiApps {
+  id: string;
+  entity: string;
+  amount: number;
+  amount_paid: number;
+  amount_due: number;
+  currency: string;
+  receipt: string;
+  offer_id: string | null;
+  status: string;
+  attempts: number;
+  notes: Record<string, any>; // Adjust based on the actual structure of `notes`
+  created_at: number;
+}
+
 export default async function Dashboard() {
   const count = getActiveProductCount();
   const activeUsers = getActiveUsersCount();
   const totalOrders = getTotalOrders();
   const totalRevenue = await getRevenueCount();
+
+  const RazorpayOrderData = await fetchRazorpayOrder();
+
+  const orderItems = RazorpayOrderData.items;
+
+  console.log('orders: ', RazorpayOrderData);
 
   const formattedRevenue = (totalRevenue / 100).toLocaleString('en-IN', {
     style: 'currency',
@@ -174,9 +219,10 @@ export default async function Dashboard() {
                     <TableHead className="text-right">Amount</TableHead>
                   </TableRow>
                 </TableHeader>
-                {orders.map((order) => (
-                  <TableBody>
-                    <TableRow>
+
+                <TableBody>
+                  {orders.map((order) => (
+                    <TableRow key={order.id}>
                       <TableCell>
                         <div className="font-medium">
                           {order.user?.firstName} {order.user?.lastName}
@@ -189,7 +235,17 @@ export default async function Dashboard() {
                         {order.user?.phoneNumber}
                       </TableCell>
                       <TableCell className="">
-                        <Badge className="text-xs" variant="outline">
+                        <Badge
+                          className={cn(
+                            'text-xs',
+                            order.status === 'paid'
+                              ? 'bg-green-100 text-green-500'
+                              : order.status === 'unpaid'
+                              ? ' bg-red-100 text-red-500'
+                              : 'bg-gray-100 text-gray-500'
+                          )}
+                          variant="outline"
+                        >
                           {order.status.toUpperCase()}
                         </Badge>
                       </TableCell>
@@ -206,8 +262,8 @@ export default async function Dashboard() {
                         ) || '0'}
                       </TableCell>
                     </TableRow>
-                  </TableBody>
-                ))}
+                  ))}
+                </TableBody>
               </Table>
             </CardContent>
           </Card>
@@ -216,76 +272,23 @@ export default async function Dashboard() {
               <CardTitle>Recent Sales</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-8">
-              <div className="flex items-center gap-4">
-                <div className="grid gap-1">
-                  <p className="text-sm font-medium leading-none">
-                    Olivia Martin
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    olivia.martin@email.com
-                  </p>
-                </div>
-                <div className="ml-auto font-medium">+1,999.00</div>
-              </div>
-              <div className="flex items-center gap-4">
-                {/* <Avatar className="hidden h-9 w-9 sm:flex">
-                  <AvatarImage src="/avatars/02.png" alt="Avatar" />
-                  <AvatarFallback>JL</AvatarFallback>
-                </Avatar> */}
-                <div className="grid gap-1">
-                  <p className="text-sm font-medium leading-none">
-                    Jackson Lee
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    jackson.lee@email.com
-                  </p>
-                </div>
-                <div className="ml-auto font-medium">+39.00</div>
-              </div>
-              <div className="flex items-center gap-4">
-                {/* <Avatar className="hidden h-9 w-9 sm:flex">
-                  <AvatarImage src="/avatars/03.png" alt="Avatar" />
-                  <AvatarFallback>IN</AvatarFallback>
-                </Avatar> */}
-                <div className="grid gap-1">
-                  <p className="text-sm font-medium leading-none">
-                    Isabella Nguyen
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    isabella.nguyen@email.com
-                  </p>
-                </div>
-                <div className="ml-auto font-medium">+299.00</div>
-              </div>
-              <div className="flex items-center gap-4">
-                {/* <Avatar className="hidden h-9 w-9 sm:flex">
-                  <AvatarImage src="/avatars/04.png" alt="Avatar" />
-                  <AvatarFallback>WK</AvatarFallback>
-                </Avatar> */}
-                <div className="grid gap-1">
-                  <p className="text-sm font-medium leading-none">
-                    William Kim
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    will@email.com
-                  </p>
-                </div>
-                <div className="ml-auto font-medium">+99.00</div>
-              </div>
-              <div className="flex items-center gap-4">
-                {/* <Avatar className="hidden h-9 w-9 sm:flex">
-                  <AvatarImage src="/avatars/05.png" alt="Avatar" />
-                  <AvatarFallback>SD</AvatarFallback>
-                </Avatar> */}
-                <div className="grid gap-1">
-                  <p className="text-sm font-medium leading-none">
-                    Sofia Davis
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    sofia.davis@email.com
-                  </p>
-                </div>
-                <div className="ml-auto font-medium">+39.00</div>
+              <div>
+                {orderItems.map((order: RazorpayOrderiApps) => (
+                  <div key={order.id} className="flex items-center gap-4 py-2">
+                    <div className="grid gap-1">
+                      <p className="text-sm font-medium leading-none">
+                        Receipt: {order.receipt || 'N/A'}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Status: {order.status}
+                      </p>
+                    </div>
+                    <div className="ml-auto font-medium">
+                      {`₹${(order.amount / 100).toLocaleString()}`}{' '}
+                      {/* Assuming amount is in paise */}
+                    </div>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>

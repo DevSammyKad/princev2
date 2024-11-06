@@ -15,7 +15,7 @@ export default async function IndexPage() {
       <CategoriesNavbar />
       <Hero />
 
-      <CategoriesSelection />
+      {/* <CategoriesSelection /> */}
       <div className="w-[90%] mx-auto rounded-lg">
         <h2 className="text-xl font-bold text-gray-900 sm:text-3xl text-center tracking-wide my-10 ">
           Handpicked
