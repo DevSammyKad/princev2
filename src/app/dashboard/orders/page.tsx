@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/card';
 import {
   Pagination,
-  PaginationEllipsis,
+  // PaginationEllipsis,
   PaginationContent,
   PaginationItem,
   PaginationNext,

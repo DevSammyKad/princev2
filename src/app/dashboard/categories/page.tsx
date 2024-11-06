@@ -27,7 +27,6 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import Image from 'next/image';
-import { Badge } from '@/components/ui/badge';
 
 async function getCategories() {
   const data = await prisma.category.findMany({

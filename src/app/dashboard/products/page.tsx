@@ -28,10 +28,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import Image from 'next/image';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Link from 'next/link';
 import prisma from '@/lib/db';
-import ProductCreateRoute from './create/page';
 
 async function getData() {
   const data = await prisma.product.findMany({

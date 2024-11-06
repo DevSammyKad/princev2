@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import Image from 'next/image';
 import placeHolder from '../../../../public/placeholder.jpg';
 
-import { ChevronLeft, Upload, XIcon, PlusCircle } from 'lucide-react';
+import { ChevronLeft, XIcon, PlusCircle } from 'lucide-react';
 
 import {
   Card,

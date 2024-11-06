@@ -1,5 +1,3 @@
-import { Cart } from '@/lib/interfaces';
-import { redis } from '@/lib/redis';
 import {
   getKindeServerSession,
   LogoutLink,
@@ -24,44 +22,27 @@ import prisma from '@/lib/db';
 import EditAccountForm from '@/app/components/storefront/EditAccountForm';
 import { unstable_noStore as noStore } from 'next/cache';
 
-interface iAppProps {
-  data: {
-    id: string;
-    email: string;
-    firstName: string;
-    lastName: string;
-    profileImage: string;
-    phoneNumber: string | null;
-    address: string | null;
-    pincode: number | null;
-    city: string | null;
-    state: string | null;
-    country: string | null;
-    createdAt: Date;
-    updatedAt: Date;
-  } | null;
-}
+// interface iAppProps {
+//   data: {
+//     id: string;
+//     email: string;
+//     firstName: string;
+//     lastName: string;
+//     profileImage: string;
+//     phoneNumber: string | null;
+//     address: string | null;
+//     pincode: number | null;
+//     city: string | null;
+//     state: string | null;
+//     country: string | null;
+//     createdAt: Date;
+//     updatedAt: Date;
+//   } | null;
+// }
 
 interface ProductDetail {
   productIds: string;
   quantity: number;
-}
-
-interface OrderProduct {
-  id: string;
-  name: string;
-  salePrice: number;
-  shortDescription?: string;
-  images: string[];
-  quantity: number; // add quantity for displaying in the UI
-}
-interface Order {
-  id: string;
-  status: string;
-  amount: number;
-  productDetails: ProductDetail[];
-  products: OrderProduct[];
-  createdAt: Date;
 }
 
 async function getOrdersById() {
@@ -135,7 +116,7 @@ async function getUserData() {
   return userData;
 }
 
-export default async function account({ data }: iAppProps) {
+export default async function account() {
   noStore();
   const { getUser } = getKindeServerSession();
   const user = await getUser();
@@ -143,8 +124,6 @@ export default async function account({ data }: iAppProps) {
   if (!user) {
     redirect('/api/auth/login');
   }
-
-  const cart: Cart | null = await redis.get(`cart-${user.id}`);
 
   const dbUser = await getDbUser();
   const orders = await getOrdersById();
@@ -195,7 +174,7 @@ export default async function account({ data }: iAppProps) {
               <CardContent></CardContent>
             </Card>
             {orders.map((order) => (
-              <Card className="my-4">
+              <Card className="my-4" key={order.id}>
                 <CardHeader>
                   <CardTitle className="flex justify-between">
                     <h1>Order ID : {order.id}</h1>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import ProductCounter from '@/app/components/storefront/ProductCounter';
 import { ShoppingBagButton } from '@/app/components/dashboard/SubmitButton';
 
@@ -10,7 +10,7 @@ interface ProductAddToCartProps {
 }
 
 export default function ProductAddToCart({
-  productId,
+  // productId,
   addProductToCart,
 }: ProductAddToCartProps) {
   const [quantity, setQuantity] = useState(1);

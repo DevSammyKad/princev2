@@ -1,9 +1,7 @@
-import GlobalSearchData from '@/lib/GlobalSearchData';
 import BestSellersProducts from '../components/storefront/BestSellers';
 import CategoriesNavbar from '../components/storefront/CategoriesNavbar';
-import { CategoriesSelection } from '../components/storefront/CategorySelection';
+// import { CategoriesSelection } from '../components/storefront/CategorySelection';
 import FeaturedProducts from '../components/storefront/FeaturedProducts';
-import GlobalSearch from '../components/storefront/GlobalSearch';
 import Handpicked from '../components/storefront/Handpicked';
 import Hero from '../components/storefront/Hero';
 import KidsSpecialProducts from '../components/storefront/KidsSpecial';

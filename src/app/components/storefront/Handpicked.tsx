@@ -9,7 +9,6 @@ import {
 } from '@/components/ui/carousel';
 import prisma from '@/lib/db';
 import Link from 'next/link';
-import { Card, CardContent } from '@/components/ui/card';
 
 async function fetchCategories() {
   const categories = await prisma.category.findMany();
@@ -24,7 +23,7 @@ const Handpicked = async () => {
       <div className="flex justify-center items-center ">
         <CarouselContent className="-ml-2 md:-ml-4 flex justify-start items-center max-md:items-start">
           {categories.map((category) => (
-            <Link href={`/products/${category.slug}`}>
+            <Link href={`/products/${category.slug}`} key={category.id}>
               {' '}
               <CarouselItem
                 key={category.id}

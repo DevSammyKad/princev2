@@ -12,9 +12,9 @@ import {
 import Image from 'next/image';
 
 import { useFormState } from 'react-dom';
-import { editCategory, editProduct } from '@/app/actions';
+import { editCategory } from '@/app/actions';
 import { parseWithZod } from '@conform-to/zod';
-import { categorySchema, productSchema } from '@/lib/zodSchemas';
+import { categorySchema } from '@/lib/zodSchemas';
 import { useForm } from '@conform-to/react';
 import { UploadDropzone } from '@/lib/uploadthing';
 import SubmitButton from '@/app/components/dashboard/SubmitButton';
@@ -31,7 +31,6 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft } from 'lucide-react';
 import { Category } from '@prisma/client';
-import placeHolder from '../../../../public/placeholder.jpg';
 
 interface iAppProps {
   data: {

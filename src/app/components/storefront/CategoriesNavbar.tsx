@@ -3,12 +3,10 @@ import React from 'react';
 import {
   NavigationMenu,
   NavigationMenuContent,
-  NavigationMenuIndicator,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-  NavigationMenuViewport,
 } from '@/components/ui/navigation-menu';
 import Image from 'next/image';
 import placeholder from '../../../../public/placeholder.jpg';
@@ -38,7 +36,10 @@ const CategoriesNavbar = async () => {
                           <Link href={`/products/${category.slug}`}>
                             <div className="my-2 text-lg font-medium flex w-[100%] space-x-5 px-3">
                               {category.subcategories.map((subcategory) => (
-                                <Link href={`/products/${subcategory.slug}`}>
+                                <Link
+                                  href={`/products/${subcategory.slug}`}
+                                  key={subcategory.id}
+                                >
                                   <div
                                     key={subcategory.id}
                                     className="flex flex-col w-full items-center text-center"

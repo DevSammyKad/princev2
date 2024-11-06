@@ -46,12 +46,6 @@ interface iAppProps {
   } | null;
 }
 const EditAccountForm = ({ data }: iAppProps) => {
-  if (!data) {
-    // Handle the case when data is null (e.g., render a loading state or an error message)
-    return <p>Loading...</p>;
-  }
-  console.log('Data in EditAccountForm:', data);
-
   const [lastResult, action] = useFormState(updateUser, undefined);
   const [form, fields] = useForm({
     // Sync the result of last submission
@@ -66,8 +60,12 @@ const EditAccountForm = ({ data }: iAppProps) => {
 
     shouldValidate: 'onBlur',
     shouldRevalidate: 'onInput',
-    defaultValue: data,
+    defaultValue: data || {},
   });
+
+  if (!data) return <p>Loading...</p>;
+  console.log('Data in EditAccountForm:', data);
+
   return (
     <form id={form.id} onSubmit={form.onSubmit} action={action}>
       <input type="hidden" name="userId" value={data.id} />

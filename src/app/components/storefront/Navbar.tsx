@@ -1,4 +1,4 @@
-import { Search, ShoppingBag, User2Icon } from 'lucide-react';
+import { ShoppingBag, User2Icon } from 'lucide-react';
 import brandLogo from '../../../../public/Bajaj-Logo.png';
 
 import {
@@ -9,7 +9,6 @@ import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
-import { NavLinks } from './NavLinks';
 import { Cart } from '@/lib/interfaces';
 import { redis } from '@/lib/redis';
 
@@ -24,7 +23,6 @@ import {
 } from '@/components/ui/drawer';
 import DrawerCart from './DrawerCart';
 
-import { Input } from '@/components/ui/input';
 import { CheckOutButton } from '../dashboard/SubmitButton';
 import { CartSheet } from './CartSheet';
 import GlobalSearch from './GlobalSearch';

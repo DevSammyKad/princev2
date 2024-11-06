@@ -4,7 +4,6 @@ import FeaturedProducts from '@/app/components/storefront/FeaturedProducts';
 import ImageSlider from '@/app/components/storefront/ImageSlider';
 import ProductAddToCart from '@/app/components/storefront/ProductAddToCart';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import prisma from '@/lib/db';
 import { StarIcon } from 'lucide-react';
@@ -109,7 +108,7 @@ export default async function ProductIdRoute({
           </p>
         </div>
         <div className="mt-12 space-y-4 pt-6">
-          <h2 className="text-2xl font-semibold">Why You'll Love This</h2>
+          <h2 className="text-2xl font-semibold">Why You&#39;ll Love This</h2>
           <ul className="list-disc list-inside text-gray-700 space-y-2">
             <li>Perfect for binge-watching your favorite shows in style.</li>
             <li>Designed for ultimate comfort during all-day wear.</li>

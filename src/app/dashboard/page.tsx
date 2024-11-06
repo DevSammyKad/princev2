@@ -114,10 +114,10 @@ export default async function Dashboard() {
 
   console.log('orders: ', RazorpayOrderData);
 
-  const formattedRevenue = (totalRevenue / 100).toLocaleString('en-IN', {
-    style: 'currency',
-    currency: 'INR',
-  });
+  // const formattedRevenue = (totalRevenue / 100).toLocaleString('en-IN', {
+  //   style: 'currency',
+  //   currency: 'INR',
+  // });
 
   const orders = await prisma.order.findMany({
     include: {

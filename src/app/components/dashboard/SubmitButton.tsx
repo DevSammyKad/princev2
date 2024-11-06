@@ -1,7 +1,7 @@
 'use client';
 import { useFormStatus } from 'react-dom';
 import { Button } from '@/components/ui/button';
-import { Loader2, RefreshCcw, ShoppingBag } from 'lucide-react';
+import { Loader2, ShoppingBag } from 'lucide-react';
 
 import { checkOut } from '@/app/actions';
 
@@ -11,12 +11,12 @@ declare global {
   }
 }
 
-interface CheckOutResponse {
-  orderId: string;
-  totalAmount: number;
-  userEmail: string | null;
-  productDetails: { productId: string; quantity: number }[];
-}
+// interface CheckOutResponse {
+//   orderId: string;
+//   totalAmount: number;
+//   userEmail: string | null;
+//   productDetails: { productId: string; quantity: number }[];
+// }
 
 export function CheckOutButton() {
   const { pending } = useFormStatus();

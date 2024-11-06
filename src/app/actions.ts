@@ -14,7 +14,6 @@ import { redis } from '@/lib/redis';
 import { Cart } from '@/lib/interfaces';
 import { revalidatePath } from 'next/cache';
 import { razorpay } from '@/lib/razorpay';
-import { v4 as uuidv4 } from 'uuid';
 
 export async function updateUser(prevState: unknown, formData: FormData) {
   const { getUser } = getKindeServerSession();
