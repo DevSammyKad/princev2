@@ -1,3 +1,4 @@
+// Imports
 import { Badge } from '@/components/ui/badge';
 import {
   Card,
@@ -24,23 +25,53 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import prisma from '@/lib/db';
-
 import React from 'react';
+import { Order, User } from '@prisma/client';
 
-async function getOrders() {
-  const orders = await prisma.order.findMany({
-    orderBy: {
-      createdAt: 'desc',
-    },
-    include: {
-      user: true,
-    },
-  });
-  return orders;
+// Define a type for the data returned by getOrders
+interface OrdersData {
+  orders: (Order & { user: User | null })[];
+  totalOrders: number;
 }
 
-const OrdersPage = async () => {
-  const orders = await getOrders();
+// Fetch orders with pagination
+async function getOrders(
+  page: number = 1,
+  pageSize: number = 10
+): Promise<OrdersData> {
+  const skip = (page - 1) * pageSize;
+
+  try {
+    const [orders, totalOrders] = await Promise.all([
+      prisma.order.findMany({
+        skip,
+        take: pageSize,
+        orderBy: { createdAt: 'desc' },
+        include: { user: true },
+      }),
+      prisma.order.count(),
+    ]);
+
+    return { orders, totalOrders };
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    return { orders: [], totalOrders: 0 };
+  }
+}
+
+// Define props for OrdersPage component to handle Next.js server-side query params
+interface OrdersPageProps {
+  searchParams: { page?: string };
+}
+
+// OrdersPage component
+const OrdersPage = async ({ searchParams }: OrdersPageProps) => {
+  // Parse and validate the page parameter
+  const page = parseInt(searchParams.page || '1', 10);
+  const pageSize = 10;
+
+  const { orders, totalOrders } = await getOrders(page, pageSize);
+  const totalPages = Math.ceil(totalOrders / pageSize);
 
   return (
     <div>
@@ -55,9 +86,9 @@ const OrdersPage = async () => {
               <TableRow>
                 <TableHead>OrderId</TableHead>
                 <TableHead>Customer Details</TableHead>
+                <TableHead>Products</TableHead>
                 <TableHead>Contact Details</TableHead>
                 <TableHead>Status</TableHead>
-
                 <TableHead className="hidden md:table-cell">Date</TableHead>
                 <TableHead className="text-right">Amount</TableHead>
               </TableRow>
@@ -71,10 +102,11 @@ const OrdersPage = async () => {
                       {order.userId}
                     </div>
                   </TableCell>
-                  <TableCell className="">
+                  <TableCell>
                     <div className="font-medium">
-                      {' '}
-                      {`${order.user?.firstName} ${order.user?.lastName}`}
+                      {`${order.user?.firstName || ''} ${
+                        order.user?.lastName || ''
+                      }`}
                     </div>
                     <div className="hidden text-sm text-muted-foreground md:inline">
                       {order.user?.address || '-'} {order.user?.city || '-'}{' '}
@@ -82,25 +114,30 @@ const OrdersPage = async () => {
                     </div>
                   </TableCell>
                   <TableCell>
+                    <pre className="font-medium">
+                      {JSON.stringify(order.productDetails, null, 2)}
+                    </pre>
+                  </TableCell>
+
+                  <TableCell>
                     <div className="font-medium">{order.user?.email}</div>
                     <div className="hidden text-sm text-muted-foreground md:inline">
                       {order.user?.phoneNumber || '-'}
                     </div>
                   </TableCell>
-
-                  <TableCell className="">
+                  <TableCell>
                     <Badge
-                      className={`${
+                      className={
                         order.status === 'paid'
                           ? 'text-green-500 bg-green-50'
                           : 'text-gray-500'
-                      }`}
+                      }
                       variant="outline"
                     >
                       {order.status.toUpperCase()}
                     </Badge>
                   </TableCell>
-                  <TableCell className="hidden md:table-cell ">
+                  <TableCell className="hidden md:table-cell">
                     {new Intl.DateTimeFormat('en-IN').format(order.createdAt)}
                   </TableCell>
                   <TableCell className="text-right">
@@ -112,27 +149,41 @@ const OrdersPage = async () => {
           </Table>
         </CardContent>
       </Card>
+
+      {/* Pagination Controls */}
       <Pagination className="my-10 mx-auto">
         <PaginationContent>
           <PaginationItem>
-            <PaginationPrevious href="#" />
+            {page > 1 ? (
+              <PaginationPrevious href={`?page=${Math.max(page - 1, 1)}`} />
+            ) : (
+              <span className="text-gray-400 cursor-not-allowed mx-3">
+                Previous
+              </span>
+            )}
           </PaginationItem>
+
+          {Array.from({ length: totalPages }, (_, index) => (
+            <PaginationItem key={index}>
+              <PaginationLink
+                href={`?page=${index + 1}`}
+                isActive={page === index + 1}
+              >
+                {index + 1}
+              </PaginationLink>
+            </PaginationItem>
+          ))}
+
           <PaginationItem>
-            <PaginationLink href="#">1</PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationLink href="#" isActive>
-              2
-            </PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationLink href="#">3</PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationEllipsis />
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationNext href="#" />
+            {page < totalPages ? (
+              <PaginationNext
+                href={`?page=${Math.min(page + 1, totalPages)}`}
+              />
+            ) : (
+              <span className="text-gray-400 cursor-not-allowed mx-3">
+                Next
+              </span>
+            )}
           </PaginationItem>
         </PaginationContent>
       </Pagination>

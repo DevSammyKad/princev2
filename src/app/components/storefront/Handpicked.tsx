@@ -21,7 +21,7 @@ const Handpicked = async () => {
 
   return (
     <Carousel className="w-full ">
-      <div className="flex justify-center items-center w-full ">
+      <div className="flex justify-center items-center ">
         <CarouselContent className="-ml-2 md:-ml-4 flex justify-start items-center max-md:items-start">
           {categories.map((category) => (
             <Link href={`/products/${category.slug}`}>

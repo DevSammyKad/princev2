@@ -7,6 +7,9 @@ async function getTrendingProducts() {
   const data = await prisma.product.findMany({
     where: {
       status: 'published',
+      tags: {
+        has: 'Trending',
+      },
     },
     select: {
       id: true,

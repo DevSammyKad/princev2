@@ -14,7 +14,7 @@ import { redis } from '@/lib/redis';
 import { Cart } from '@/lib/interfaces';
 import { revalidatePath } from 'next/cache';
 import { razorpay } from '@/lib/razorpay';
-import { json } from 'stream/consumers';
+import { v4 as uuidv4 } from 'uuid';
 
 export async function updateUser(prevState: unknown, formData: FormData) {
   const { getUser } = getKindeServerSession();
@@ -27,13 +27,17 @@ export async function updateUser(prevState: unknown, formData: FormData) {
   const submission = parseWithZod(formData, {
     schema: userSchema,
   });
-  console.log('Form Data:', formData.get('userId') as string);
 
   if (submission.status !== 'success') {
     return submission.reply();
   }
 
-  const userId = formData.get('userId') as string;
+  const userId = (formData.get('userId') as string) || user.id;
+  if (!userId) throw new Error('User ID is missing');
+  const pincode = Number(submission.value.pincode);
+  if (isNaN(pincode)) {
+    throw new Error('Pincode must be a valid number');
+  }
   await prisma.user.update({
     where: {
       id: userId,
@@ -47,7 +51,7 @@ export async function updateUser(prevState: unknown, formData: FormData) {
       city: submission.value.city,
       state: submission.value.state,
       country: submission.value.country,
-      pincode: submission.value.pincode,
+      pincode,
       profileImage: submission.value.profileImage,
     },
   });
@@ -204,14 +208,22 @@ export async function createProduct(prevState: unknown, formData: FormData) {
   );
 
   const category = await prisma.category.findUnique({
-    where: { slug: submission.value.category }, // Assuming you are passing the category slug
+    where: { id: submission.value.category }, // Assuming you are passing the category slug
   });
 
   if (!category) {
-    throw new Error('Category not found');
+    throw new Error(
+      `Category with slug or id "${submission.value.category}" not found`
+    );
   }
 
-  // const tagNames = submission.value.tags.split(',').map((tag: string) => tag.trim());
+  // const tags =
+  //   typeof submission.value.tags === 'string'
+  //     ? (submission.value.tags as string).split(',') // Split the string into an array
+  //     : submission.value.tags;
+
+  const tagsString = formData.get('tags') as string;
+  const tags = tagsString ? tagsString.split(',').map((tag) => tag.trim()) : [];
 
   await prisma.product.create({
     data: {
@@ -224,8 +236,11 @@ export async function createProduct(prevState: unknown, formData: FormData) {
       images: flattenUrls,
       isFeatured: Boolean(submission.value.isFeatured === true ? true : false),
       category: { connect: { id: category.id } },
+      tags,
     },
   });
+
+  console.log('Product Created Data', formData);
 
   return redirect('/dashboard/products');
 }
@@ -253,10 +268,23 @@ export async function editProduct(prevState: unknown, formData: FormData) {
   });
 
   if (!category) {
-    throw new Error('Category not found');
+    throw new Error(
+      `Category with slug or id "${submission.value.category}" not found`
+    );
   }
 
+  // Assuming submission.value.tags is of type string[] (array of strings)
+
+  // const tags =
+  //   typeof submission.value.tags === 'string'
+  //     ? (submission.value.tags as string).split(',') // Split the string into an array
+  //     : submission.value.tags;
+
+  const tagsString = formData.get('tags') as string;
+  const tags = tagsString ? tagsString.split(',').map((tag) => tag.trim()) : [];
+
   const productId = formData.get('productId') as string;
+  console.log('Form Data', formData);
   await prisma.product.update({
     where: {
       id: productId,
@@ -271,8 +299,11 @@ export async function editProduct(prevState: unknown, formData: FormData) {
       images: flattenUrls,
       isFeatured: submission.value.isFeatured === true ? true : false,
       category: { connect: { id: category.id } },
+      tags,
     },
   });
+
+  console.log('Updated Product Data', formData);
   return redirect('/dashboard/products');
 }
 

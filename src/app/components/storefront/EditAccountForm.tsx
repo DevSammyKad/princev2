@@ -27,7 +27,6 @@ import { userSchema } from '@/lib/zodSchemas';
 import { useFormState } from 'react-dom';
 
 import { UpdateUserButton } from '../dashboard/SubmitButton';
-import { Button } from '@/components/ui/button';
 
 interface iAppProps {
   data: {
@@ -51,6 +50,8 @@ const EditAccountForm = ({ data }: iAppProps) => {
     // Handle the case when data is null (e.g., render a loading state or an error message)
     return <p>Loading...</p>;
   }
+  console.log('Data in EditAccountForm:', data);
+
   const [lastResult, action] = useFormState(updateUser, undefined);
   const [form, fields] = useForm({
     // Sync the result of last submission
@@ -69,6 +70,7 @@ const EditAccountForm = ({ data }: iAppProps) => {
   });
   return (
     <form id={form.id} onSubmit={form.onSubmit} action={action}>
+      <input type="hidden" name="userId" value={data.id} />
       <Card>
         <CardHeader>
           <CardTitle>Personal Information</CardTitle>
@@ -77,7 +79,6 @@ const EditAccountForm = ({ data }: iAppProps) => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <input type="hidden" name="userId" value={data.id} />
           <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
             <div className="sm:col-span-3 flex space-x-3 items-center ">
               <div className="w-full">

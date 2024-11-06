@@ -10,7 +10,8 @@ export const productSchema = z.object({
   price: z.number().min(1, 'Price Must me greater than 0 '),
   salePrice: z.number().min(1, 'Price Must me greater than 0 '),
   isFeatured: z.boolean().optional(),
-  tags: z.array(z.string()).optional(),
+  // tags: z.array(z.string()).optional(),
+  tags: z.array(z.string()).min(1, 'Select at least one tag'),
 });
 
 // Category schema with slug generation and uniqueness check

@@ -1,11 +1,15 @@
 import prisma from '@/lib/db';
 import { LoadingProductCard, ProductCard } from './ProductCard';
 import { Suspense } from 'react';
+import { Separator } from '@/components/ui/separator';
 
 async function getBestSellersProducts() {
   const data = await prisma.product.findMany({
     where: {
       status: 'published',
+      tags: {
+        has: 'BestSellers',
+      },
     },
     select: {
       id: true,
@@ -27,9 +31,10 @@ async function getBestSellersProducts() {
 export default function BestSellersProducts() {
   return (
     <>
-      <h2 className="text-xl font-bold text-gray-900 sm:text-3xl text-center tracking-wide my-10 ">
+      <h2 className="text-3xl capitalize font-bold text-gray-900 sm:text-3xl text-center tracking-wide mt-10 mb-4">
         Best Sellers
       </h2>
+      <Separator className="w-[50%] bg-black mx-auto mb-10" />
       <Suspense fallback={loadingRows()}>
         <LoadingBestSellersProducts />
       </Suspense>

@@ -22,7 +22,7 @@ import { Check } from 'lucide-react';
 import prisma from '@/lib/db';
 
 import EditAccountForm from '@/app/components/storefront/EditAccountForm';
-import Link from 'next/link';
+import { unstable_noStore as noStore } from 'next/cache';
 
 interface iAppProps {
   data: {
@@ -136,6 +136,7 @@ async function getUserData() {
 }
 
 export default async function account({ data }: iAppProps) {
+  noStore();
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
@@ -270,7 +271,7 @@ export default async function account({ data }: iAppProps) {
                                 : 'N/A'}
                             </span>
                           </div>
-                          <div className="max-sm:hidden">
+                          <div className="">
                             <p className="text-gray-500 text-sm">
                               {product
                                 ? product.shortDescription
@@ -308,7 +309,7 @@ export default async function account({ data }: iAppProps) {
                     </div>
                     <div className="flex items-center gap-5">
                       <span className="text-green-500 bg-green-50 py-2 px-4 rounded-lg font-medium text-lg max-sm:text-sm">
-                        ₹
+                        Total Amount : ₹
                         {order.amount
                           ? new Intl.NumberFormat('en-IN').format(
                               order.amount / 100
@@ -324,8 +325,7 @@ export default async function account({ data }: iAppProps) {
             ))}
           </TabsContent>
           <TabsContent value="support" className="w-full">
-            Change your address here.
-            <LogoutLink>Logout</LogoutLink>
+            <LogoutLink className="text-blue-500 text-sm">Logout</LogoutLink>
           </TabsContent>
           <TabsContent value="refer" className="w-full">
             This Feature is under construction

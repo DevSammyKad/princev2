@@ -35,6 +35,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  MultiSelector,
+  MultiSelectorContent,
+  MultiSelectorInput,
+  MultiSelectorItem,
+  MultiSelectorList,
+  MultiSelectorTrigger,
+} from '@/components/ui/multi-select';
+
 import { UploadDropzone } from '@/lib/uploadthing';
 
 import { createProduct } from '@/app/actions';
@@ -51,6 +60,8 @@ const ProductCreateRoute = () => {
   const [images, setImages] = useState<string[]>([]);
 
   const [categories, setCategories] = useState<Category[] | null>();
+
+  const [tag, setTag] = useState<string[]>([]);
 
   const [lastResult, action] = useFormState(createProduct, undefined);
   const [form, fields] = useForm({
@@ -133,7 +144,7 @@ const ProductCreateRoute = () => {
                   name={fields.shortDescription.name}
                   defaultValue={fields.shortDescription.initialValue}
                   className="min-h-16"
-                  placeholder="write your product description here"
+                  placeholder="Write your product description here"
                 />
                 <p className="text-red-500 text-sm">
                   {fields.shortDescription.errors}
@@ -148,7 +159,7 @@ const ProductCreateRoute = () => {
                   name={fields.description.name}
                   defaultValue={fields.description.initialValue}
                   className="min-h-32"
-                  placeholder="write your product description here"
+                  placeholder="Write your product description here"
                   style={{ whiteSpace: 'pre-wrap' }}
                 />
                 <p className="text-red-500 text-sm">
@@ -439,7 +450,16 @@ const ProductCreateRoute = () => {
               </div>
 
               <div className="grid gap-3 my-3">
-                <Label htmlFor="category">Category</Label>
+                <Label htmlFor="category">
+                  Category{' '}
+                  <Link
+                    href="/dashboard/categories/create"
+                    className="text-blue-500"
+                    target="_blank"
+                  >
+                    ( Create New Category )
+                  </Link>
+                </Label>{' '}
                 <Select
                   key={fields.category.key}
                   name={fields.category.name}
@@ -477,14 +497,35 @@ const ProductCreateRoute = () => {
               <div className="grid gap-3">
                 <div className="grid gap-3">
                   <Label htmlFor="tags">Tags</Label>
-                  <Input
-                    id="tags"
+                  <MultiSelector
+                    values={tag}
+                    onValuesChange={setTag}
+                    className="max-w-xs"
+                  >
+                    <MultiSelectorTrigger>
+                      <MultiSelectorInput placeholder="Select Tags" />
+                    </MultiSelectorTrigger>
+                    <MultiSelectorContent>
+                      <MultiSelectorList>
+                        <MultiSelectorItem value={'BestSellers'}>
+                          BestSellers
+                        </MultiSelectorItem>
+                        <MultiSelectorItem value={'Trending'}>
+                          Trending
+                        </MultiSelectorItem>
+                        <MultiSelectorItem value={'KidsSpecial'}>
+                          KidsSpecial
+                        </MultiSelectorItem>
+                      </MultiSelectorList>
+                    </MultiSelectorContent>
+                  </MultiSelector>
+                  <input
+                    type="hidden"
                     name={fields.tags.name}
+                    key={fields.tags.key}
                     defaultValue={fields.tags.initialValue as string}
-                    placeholder="Enter tags, separated by commas"
-                    className="w-full"
+                    value={tag.join(',')}
                   />
-
                   <p className="text-red-500 text-sm">{fields.tags.errors}</p>
                 </div>
               </div>

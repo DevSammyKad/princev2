@@ -44,6 +44,14 @@ import { useForm } from '@conform-to/react';
 import { UploadDropzone } from '@/lib/uploadthing';
 import SubmitButton from '@/app/components/dashboard/SubmitButton';
 import { Category, type $Enums } from '@prisma/client';
+import {
+  MultiSelector,
+  MultiSelectorContent,
+  MultiSelectorInput,
+  MultiSelectorItem,
+  MultiSelectorList,
+  MultiSelectorTrigger,
+} from '@/components/ui/multi-select';
 
 interface iAppProps {
   data: {
@@ -57,14 +65,24 @@ interface iAppProps {
     price: number;
     salePrice: number;
     isFeatured: boolean;
-    tags: string[];
+    tags: string | string[];
   };
 }
+
+// const parseTags = (tags: string) => tags.split(',').map((tag) => tag.trim());
 
 export default function EditForm({ data }: iAppProps) {
   const [categories, setCategories] = useState<Category[] | null>();
   const [images, setImages] = useState<string[]>(data.images);
   const [lastResult, action] = useFormState(editProduct, undefined);
+
+  const initialTags =
+    typeof data.tags === 'string' ? JSON.parse(data.tags) : data.tags || [];
+  const [tag, setTag] = useState(initialTags);
+
+  useEffect(() => {
+    setTag(initialTags); // Sync the `tag` state with `data.tags` on component load or data update
+  }, [data.tags]);
 
   const [form, fields] = useForm({
     // Sync the result of last submission
@@ -81,6 +99,8 @@ export default function EditForm({ data }: iAppProps) {
     shouldRevalidate: 'onInput',
     defaultValue: data,
   });
+
+  console.log('Data', data.tags);
 
   const handleDeleteImage = (index: number) => {
     setImages(images.filter((_, i) => i !== index));
@@ -426,7 +446,7 @@ export default function EditForm({ data }: iAppProps) {
                 <Select
                   key={fields.category.key}
                   name={fields.category.name}
-                  value={data.category}
+                  defaultValue={data.category}
                 >
                   <SelectTrigger id="category" aria-label="Select category">
                     <SelectValue placeholder="Select category" />
@@ -444,15 +464,36 @@ export default function EditForm({ data }: iAppProps) {
               </div>
               <div className="grid gap-3">
                 <Label htmlFor="tags">Tags</Label>
-                <Input
-                  id="tags"
+                <MultiSelector
+                  values={tag}
+                  onValuesChange={setTag}
+                  // defaultValue={data.tags as string}
+                  className="max-w-xs"
+                >
+                  <MultiSelectorTrigger>
+                    <MultiSelectorInput placeholder="Select Tags" />
+                  </MultiSelectorTrigger>
+                  <MultiSelectorContent>
+                    <MultiSelectorList>
+                      <MultiSelectorItem value={'BestSellers'}>
+                        BestSellers
+                      </MultiSelectorItem>
+                      <MultiSelectorItem value={'Trending'}>
+                        Trending
+                      </MultiSelectorItem>
+                      <MultiSelectorItem value={'KidsSpecial'}>
+                        KidsSpecial
+                      </MultiSelectorItem>
+                    </MultiSelectorList>
+                  </MultiSelectorContent>
+                </MultiSelector>
+                <input
+                  type="hidden"
                   name={fields.tags.name}
                   key={fields.tags.key}
-                  value={data.tags}
-                  placeholder="Enter tags, separated by commas"
-                  className="w-full"
+                  value={tag.join(',')}
+                  // value={JSON.stringify(tag)}
                 />
-
                 <p className="text-red-500 text-sm">{fields.tags.errors}</p>
               </div>
             </div>

@@ -21,8 +21,8 @@ const CategoriesNavbar = async () => {
     },
   });
   return (
-    <div className="flex items-center justify-center  ">
-      <NavigationMenu className="w-full text-black">
+    <div className="flex items-center justify-center my-4 ">
+      <NavigationMenu className="w-full text-black ">
         <NavigationMenuList className="w-full space-x-5 text-black">
           {categories.map((category) => (
             <NavigationMenuItem key={category.id} className="text-black">
@@ -34,40 +34,45 @@ const CategoriesNavbar = async () => {
                   <NavigationMenuContent className="rounded-md bg-gradient-to-b from-muted/50 to-muted  w-full  no-underline outline-none focus:shadow-md flex ">
                     <div className="flex items-center justify-center">
                       <NavigationMenuLink asChild>
-                        <Link href={`/products/${category.slug}`}>
-                          <div className="my-2 text-lg font-medium flex w-full space-x-5 px-3">
-                            {category.subcategories.map((subcategory) => (
-                              <Link href={`/products/${subcategory.slug}`}>
-                                <div
-                                  key={subcategory.id}
-                                  className="flex flex-col items-center text-center"
-                                >
-                                  <div>
-                                    <Image
-                                      src={
-                                        subcategory.imageString || placeholder
-                                      }
-                                      alt={subcategory.slug}
-                                      width={300}
-                                      height={300}
-                                      className="max-h-32 max-w-32 rounded-full object-cover"
-                                    />
+                        <div className="w-full">
+                          <Link href={`/products/${category.slug}`}>
+                            <div className="my-2 text-lg font-medium flex w-[100%] space-x-5 px-3">
+                              {category.subcategories.map((subcategory) => (
+                                <Link href={`/products/${subcategory.slug}`}>
+                                  <div
+                                    key={subcategory.id}
+                                    className="flex flex-col w-full items-center text-center"
+                                  >
+                                    <div>
+                                      <Image
+                                        src={
+                                          subcategory.imageString || placeholder
+                                        }
+                                        alt={subcategory.slug}
+                                        width={300}
+                                        height={300}
+                                        className="max-h-32 max-w-32 rounded-full object-cover"
+                                      />
+                                    </div>
+                                    <span className="text-black hover:text-blue-500">
+                                      {subcategory.name}
+                                    </span>
                                   </div>
-                                  <span className="text-black hover:text-blue-500">
-                                    {subcategory.name}
-                                  </span>
-                                </div>
-                              </Link>
-                            ))}
-                          </div>
-                        </Link>
+                                </Link>
+                              ))}
+                            </div>
+                          </Link>
+                        </div>
                       </NavigationMenuLink>
                     </div>
                   </NavigationMenuContent>{' '}
                 </>
               ) : (
                 // Category without subcategories
-                <NavigationMenuLink asChild className="text-blue-500">
+                <NavigationMenuLink
+                  asChild
+                  className="hover:text-blue-500 overflow-x-auto"
+                >
                   <Link href={`/products/${category.slug}`}>
                     {category.name}
                   </Link>

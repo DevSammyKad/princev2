@@ -27,11 +27,13 @@ import DrawerCart from './DrawerCart';
 import { Input } from '@/components/ui/input';
 import { CheckOutButton } from '../dashboard/SubmitButton';
 import { CartSheet } from './CartSheet';
+import GlobalSearch from './GlobalSearch';
+import GlobalSearchData from '@/lib/GlobalSearchData';
 
 export default async function Navbar() {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
-
+  const data = await GlobalSearchData();
   const cart: Cart | null = await redis.get(`cart-${user?.id}`);
 
   const total = cart?.items.reduce((sum, item) => sum + item.quantity, 0 || 0);
@@ -55,17 +57,7 @@ export default async function Navbar() {
             {/* <NavLinks /> */}
           </div>
           <div className="ml-4">
-            <form className="ml-auto flex items-center">
-              <div className="relative items-center w-full ">
-                <Search className="absolute left-2.5 top-[50%] -translate-y-[50%] h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="search"
-                  placeholder="Search products..."
-                  className="pl-8 max-sm:[200px] md:w-[500px] lg:w-[1200px] border-black border focus:bg-none focus:ring-0 focus:border-none"
-                  // max-sm:w-[200px] sm:w-[300px] md:w-[200px] lg:w-[500px]
-                />
-              </div>
-            </form>
+            <GlobalSearch data={data} />
           </div>
 
           <div className="block ">

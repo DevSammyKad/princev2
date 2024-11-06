@@ -44,42 +44,13 @@ model Product {
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @default(now())
   isFeatured       Boolean       @default(false)
-  productTags      Tags[]        @relation("ProductTags")
   salePrice        Float
-  ProductTag       ProductTag[]
+  tags             String[]  
 }
 
-model Tags {
-  id         String       @id
-  name       String       @unique
-  products   Product[]    @relation("ProductTags")
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @default(now())
-  ProductTag ProductTag[]
-}
 
-model Order {
-  id             String   @id @default(uuid())
-  status         String   @default("pending")
-  amount         Int
-  productDetails Json?
-  user           User?    @relation(fields: [userId], references: [id])
-  productIds     String?
-  userId         String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @default(now())
-}
 
-model ProductTag {
-  productId String
-  tagId     String
-  product   Product @relation(fields: [productId], references: [id])
-  tag       Tags    @relation(fields: [tagId], references: [id])
-
-  @@id([productId, tagId]) // Composite key
-}
-
-model Category {
+ model Category {
   id            String     @id @default(uuid()) // Unique ID for each category/subcategory
   name          String
   slug          String     @unique
@@ -92,15 +63,21 @@ model Category {
   updatedAt     DateTime   @default(now())
 }
 
+
+model Order {
+  id             String   @id @default(uuid())
+  status         String   @default("pending")
+  amount         Int
+  productDetails Json
+  user           User?    @relation(fields: [userId], references: [id])
+  userId         String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now())
+}
+
+
+
 enum ProductStatus {
   draft
   published
-}
-
-model WishList {
-  id        String   @id
-  userId    String
-  productId String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
 }
