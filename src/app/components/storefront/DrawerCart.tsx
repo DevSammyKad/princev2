@@ -33,7 +33,7 @@ export default async function DrawerCart() {
         {' '}
         <div>
           <span>
-            Congratulations! You'll save ₹
+            Congratulations! You&#39;ll save ₹
             <strong className="font-medium text-green-500">
               {' '}
               {saveAmount}{' '}

@@ -5,7 +5,6 @@ import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { NextResponse } from 'next/server';
-import { use } from 'react';
 
 export async function POST(request: Request) {
   try {
@@ -16,8 +15,8 @@ export async function POST(request: Request) {
       return redirect('/');
     }
 
-    const { razorpayPaymentId, orderId, amount, userEmail, productDetails } =
-      await request.json();
+    // razorpayPaymentId I just Deleted
+    const { orderId, amount, userEmail, productDetails } = await request.json();
 
     // Confirm payment with Razorpay API if needed here (optional)
     // Verify user exists
