@@ -45,8 +45,9 @@ const GlobalSearch = ({ data }: GlobalSearchProps) => {
           <Input
             type="search"
             placeholder="Search products..."
-            className="pl-8 max-sm:[200px] md:w-[500px] lg:w-[1200px] border-black border focus:bg-none focus:ring-0 focus:border-none"
+            className="pl-8 w-full  max-sm:w-[100%] md:w-[500px] lg:w-[700px] xl:w-[1000px] 2xl:w-[1300px] border-black border focus:bg-none focus:ring-0 focus:border-1"
             onClick={() => setOpen(true)}
+            // max-sm:w-[200px] md:w-[500px] lg:w-[1200px]
             // max-sm:w-[200px] sm:w-[300px] md:w-[200px] lg:w-[500px]
           />
         </div>

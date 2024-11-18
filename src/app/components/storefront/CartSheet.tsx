@@ -83,19 +83,19 @@ export async function CartSheet() {
             </div>
             <SheetFooter className="flex-shrink-0">
               <SheetClose asChild>
-                <div className="flex justify-between items-center space-x-5 w-full">
-                  <Button variant="outline">Continue Shopping</Button>
+                <Button variant="outline">Continue Shopping</Button>
+              </SheetClose>
 
-                  {dbUser?.address === null ? (
-                    <div>
-                      <Link href={'/account'}>
-                        <Button>First Fill Address</Button>
-                      </Link>
-                    </div>
-                  ) : (
-                    <CheckOutButton />
-                  )}
-                </div>
+              <SheetClose>
+                {dbUser?.address === null ? (
+                  <Link href="/account">
+                    <SheetClose asChild>
+                      <Button>First Fill Address</Button>
+                    </SheetClose>
+                  </Link>
+                ) : (
+                  <CheckOutButton />
+                )}
               </SheetClose>
             </SheetFooter>
           </SheetContent>

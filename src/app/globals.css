@@ -66,4 +66,11 @@
   body {
     @apply bg-background text-foreground;
   }
+  body {
+    transform: scale(0.9);
+    width: calc(100vw / 0.9);
+    transform-origin: top left;
+    height: calc(100vh / 0.9); /* Adjusts height to prevent scroll issues */
+    overflow-x: hidden; /* Prevents any horizontal overflow */
+  }
 }

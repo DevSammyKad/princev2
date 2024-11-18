@@ -10,12 +10,14 @@ import TrendingProducts from '../components/storefront/TrendingProducts';
 export default async function IndexPage() {
   return (
     <div className="">
-      <CategoriesNavbar />
+      <div className="max-md:hidden">
+        <CategoriesNavbar />
+      </div>
       <Hero />
 
       {/* <CategoriesSelection /> */}
       <div className="w-[90%] mx-auto rounded-lg">
-        <h2 className="text-xl font-bold text-gray-900 sm:text-3xl text-center tracking-wide my-10 ">
+        <h2 className="text-xl font-bold text-gray-900 sm:text-3xl text-center tracking-wide my-5 ">
           Handpicked
         </h2>
         <Handpicked />

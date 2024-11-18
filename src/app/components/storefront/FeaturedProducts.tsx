@@ -44,7 +44,7 @@ async function LoadingFeaturedProducts() {
   const data = await getFeaturedProducts();
 
   return (
-    <div className="mt-5 grid sm:grid-cols-2 lg:grid-cols-5 gap-10">
+    <div className="mt-5 grid grid-cols-2 lg:grid-cols-5 gap-10">
       {data.map((item) => (
         <ProductCard item={item} key={item.id} />
       ))}

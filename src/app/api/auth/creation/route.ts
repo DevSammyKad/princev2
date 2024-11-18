@@ -40,7 +40,11 @@ export async function GET() {
     }
 
     // return new NextResponse(JSON.stringify(dbUser), { status: 200 });
-    return NextResponse.redirect('http://localhost:3000');
+    return NextResponse.redirect(
+      process.env.NODE_ENV === 'development'
+        ? 'http://localhost:3000'
+        : 'https://prince.com'
+    );
   } catch (error) {
     console.error('Error during GET:', error);
     return new NextResponse('Internal Server Error', { status: 500 });

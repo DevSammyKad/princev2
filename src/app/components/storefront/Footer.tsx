@@ -35,7 +35,7 @@ const data = [
 export default function Footer() {
   return (
     <>
-      <footer className="relative w-full bg-blue-100 rounded-lg text-gray-900">
+      <footer className="relative w-full bg-black rounded-lg text-white">
         <div className="w-full px-8 mx-auto ">
           <div className="grid w-full grid-cols-2 gap-8 py-12 mx-auto md:grid-cols-3 lg:grid-cols-4 items-center justify-center">
             {data.map((item, index) => (

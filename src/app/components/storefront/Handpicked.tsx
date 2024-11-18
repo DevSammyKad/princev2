@@ -27,11 +27,11 @@ const Handpicked = async () => {
               {' '}
               <CarouselItem
                 key={category.id}
-                className="pl-2 md:pl-4 basis-1/1 md:basis-1/4 lg:basis-1/6"
+                className="md:pl-4 pl-0 basis-1/1 md:basis-1/4 lg:basis-1/6 flex justify-center items-center"
                 // className="pl-1 md:basis-1/5 basis-1/6"
               >
-                <div className="p-4 flex flex-col items-center justify-center">
-                  <div className="rounded-full w-36 h-36 flex items-center justify-center border-4 border-gray-800  overflow-hidden">
+                <div className="p-2 flex flex-col items-center justify-center">
+                  <div className="rounded-full w-28 h-28 flex items-center justify-center border-2  border-gray-800  overflow-hidden">
                     <div className="flex items-center justify-center">
                       <Image
                         src={category.imageString || placeHolder}
@@ -42,7 +42,7 @@ const Handpicked = async () => {
                       />
                     </div>
                   </div>
-                  <span className="text-lg font-semibold mt-2 text-center">
+                  <span className="text-lg font-semibold mt-2 text-center line-clamp-1 text-gray-600">
                     {category.name}
                   </span>
                 </div>
@@ -51,8 +51,8 @@ const Handpicked = async () => {
           ))}
         </CarouselContent>
       </div>
-      <CarouselPrevious />
-      <CarouselNext />
+      {/* <CarouselPrevious className="ml-4" />
+      <CarouselNext className="mr-4" /> */}
     </Carousel>
   );
 };

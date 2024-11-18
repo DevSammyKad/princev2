@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import ProductCounter from '@/app/components/storefront/ProductCounter';
 import { ShoppingBagButton } from '@/app/components/dashboard/SubmitButton';
+import { toast } from 'sonner';
 
 interface ProductAddToCartProps {
   productId: string;
@@ -25,6 +26,7 @@ export default function ProductAddToCart({
     const formData = new FormData(e.currentTarget);
     formData.set('quantity', quantity.toString()); // Update the quantity in the form data
     await addProductToCart(formData);
+    toast.success('Product added to cart!');
   };
 
   return (

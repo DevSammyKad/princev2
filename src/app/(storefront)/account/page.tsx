@@ -304,10 +304,11 @@ export default async function account() {
             ))}
           </TabsContent>
           <TabsContent value="support" className="w-full">
+            <p>If you see any problem , Click on logout and then login again</p>
             <LogoutLink className="text-blue-500 text-sm">Logout</LogoutLink>
           </TabsContent>
           <TabsContent value="refer" className="w-full">
-            This Feature is under construction
+            This Feature is under Development
           </TabsContent>
         </Tabs>
       </div>
